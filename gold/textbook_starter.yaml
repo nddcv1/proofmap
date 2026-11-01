@@ -1,0 +1,6 @@
+# Starter gold set for the real textbooks.
+#
+# Keep this empty until a human labels proofs by reading them. The v0.1
+# acceptance target is 30 proofs, stratified across shufeng / shuxia / lay.
+# Schema and protocol: gold/README.md.
+proofs: []
