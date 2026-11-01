@@ -86,6 +86,17 @@ def test_empty_section_fallback_is_ambiguous():
     assert attachments[0].status == "ambiguous"
 
 
+def test_example_statement_containing_prove_word_is_not_inline_penalty():
+    chunks = [
+        chunk("c1", "example", "例 1 证明极限存在。"),
+        chunk("c2", "proof", "证明: 由定义可知。"),
+    ]
+    nodes, _ = extract_nodes(chunks)
+    attachments = attach_proofs(chunks, nodes)
+    assert attachments[0].status == "attached"
+    assert attachments[0].non_graph is True
+
+
 def test_apply_attachments_is_idempotent():
     chunks = [
         chunk("c1", "theorem", "定理 1.1 若 A 则 B。"),
