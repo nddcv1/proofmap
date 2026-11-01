@@ -79,7 +79,7 @@ uv run proofmap render --build build/mathkb --out docs/index.html --structure-on
 - 左右两侧分别是过滤器和节点详情；中间是按书/章过滤的依赖图。
 - 实线=定理依赖，虚线=定义概念，点线=指代引用，粗红线=人工确认。
 - 结构版保留章节、编号、页码、依赖方向、类型和置信度；默认显示依赖最密的章节，章节下方有“查看全书”入口。
-- 证据版还可以看陈述、归属证明和每条先修边的原文。
+- 证据版还可以看陈述、归属证明和每条先修边的原文；Markdown 与 LaTeX 在浏览器内用 MathJax SVG 离线渲染。
 - 选中节点后可以：
   - 只看先修 / 只看后继；
   - 生成上游拓扑排序的“学习路径”；
@@ -92,7 +92,7 @@ uv run proofmap render --build build/mathkb --out docs/index.html --structure-on
 
 - 12 个节点，11 条边，9 个证明全部归属。
 - 8 个手标证明：attachment accuracy 1.000，edge precision 1.000，edge recall 1.000。
-- 53 个自动化测试。
+- 54 个自动化测试。
 
 本地 math-kb 全量基线（5 本书，未提交数据）：
 
@@ -261,7 +261,7 @@ uv run --extra dev pytest -q
 - 只收显式 `kind=definition`；正文里的“称…为…”定义还没抽。
 - 不做跨书依赖，例如数分下引用数分上的定理会进未解析清单。
 - 本地全量基线里仍有 55 个歧义、34 个未归属证明；需要看 `attachment_audit.md` 或写 corrections。
-- 公式以 LaTeX 源码显示，不做排版；终端和离线 HTML 都如此。
+- 证据页的陈述、证明和证据引用用 Markdown + MathJax SVG 离线渲染；结构版不含原文；终端 CLI 仍输出纯文本。
 - 30 个真实教材证明的黄金集还没标，因此不对真实数据宣称 precision/recall。
 - 公开结构版不包含教材原文；完整证据只在本地构建或合成 demo 中。
 - 笔记覆盖（Obsidian）在 v0.2，还没做。

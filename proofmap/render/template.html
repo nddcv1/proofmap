@@ -93,6 +93,17 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
 .section-label{font-size:11px;font-weight:600;color:var(--ink-soft);margin:20px 0 8px;letter-spacing:.02em}
 .statement,.proof{font-family:var(--serif);font-size:14px;line-height:1.95;color:var(--ink);white-space:pre-wrap;word-break:break-word}
 .proof{background:#fff;border:1px solid var(--line);padding:12px;max-height:280px;overflow:auto}
+.statement.rich,.proof.rich,.evidence.rich{white-space:normal}
+.statement.rich p,.proof.rich p,.evidence.rich p{margin:0 0 .65em}
+.statement.rich p:last-child,.proof.rich p:last-child,.evidence.rich p:last-child{margin-bottom:0}
+.statement.rich ul,.proof.rich ul,.evidence.rich ul,
+.statement.rich ol,.proof.rich ol,.evidence.rich ol{margin:.2em 0 .6em 1.2em;padding:0}
+.statement.rich li,.proof.rich li,.evidence.rich li{margin:.1em 0}
+.statement.rich h1,.statement.rich h2,.statement.rich h3,
+.proof.rich h1,.proof.rich h2,.proof.rich h3{font-size:1.08em;margin:.5em 0 .25em}
+.statement.rich code,.proof.rich code,.evidence.rich code{font-family:var(--mono);font-size:.9em;background:#fff;padding:1px 3px;border:1px solid var(--line)}
+mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}
+mjx-container[display="true"]{margin:.55em 0 !important}
 .muted{color:var(--muted);font-size:12px;line-height:1.7}
 .footnote{margin-top:18px;font-size:10px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
 .edge-list{display:grid;gap:0}
@@ -210,6 +221,20 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
 <script>__DAGRE_JS__</script>
 <script>__CY_DAGRE_JS__</script>
 <script>
+window.MathJax = {
+  startup: {typeset: false},
+  tex: {
+    inlineMath: [["$", "$"], ["\\(", "\\)"]],
+    displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+    processEscapes: true
+  },
+  svg: {fontCache: "global"},
+  options: {skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]}
+};
+</script>
+<script>__MARKED_JS__</script>
+<script>__MATHJAX_JS__</script>
+<script>
 (function(){
   "use strict";
   const DATA = __GRAPH_JSON__;
@@ -263,6 +288,82 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     if (text !== undefined && text !== null) node.textContent = text;
     return node;
   }
+
+  const hasMarkdown = typeof marked !== "undefined";
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function protectMath(text) {
+    const segments = [];
+    const token = match => {
+      const key = "PMATHSEG" + segments.length + "ENDSEG";
+      segments.push(match);
+      return key;
+    };
+    let masked = String(text);
+    masked = masked.replace(/\$\$([\s\S]*?)\$\$/g, token);
+    masked = masked.replace(/\\\[([\s\S]*?)\\\]/g, token);
+    masked = masked.replace(/\\\(([\s\S]*?)\\\)/g, token);
+    masked = masked.replace(/\$([^$\n]+?)\$/g, token);
+    return {masked, segments};
+  }
+
+  function restoreMath(html, segments) {
+    return html.replace(/PMATHSEG(\d+)ENDSEG/g, (match, index) => {
+      return escapeHtml(segments[Number(index)]);
+    });
+  }
+
+  function restrictLinks(html) {
+    return html.replace(/<a\s+([^>]*)>/gi, (match, attributes) => {
+      const href = attributes.match(/href="([^"]*)"/i);
+      if (href && !/^(https?:|mailto:|#|\/)/i.test(href[1])) {
+        return match.replace(/href="[^"]*"/i, 'href="#"');
+      }
+      return match;
+    });
+  }
+
+  function typesetMath(element) {
+    if (typeof MathJax === "undefined" || !element) return;
+    const ready = MathJax.startup && MathJax.startup.promise
+      ? MathJax.startup.promise
+      : Promise.resolve();
+    ready.then(() => {
+      if (MathJax.typesetPromise) return MathJax.typesetPromise([element]);
+      return undefined;
+    }).catch(() => {
+      /* Leave the source visible if typesetting fails. */
+    });
+  }
+
+  function renderRichText(element, text) {
+    if (text === undefined || text === null || text === "") {
+      element.textContent = "";
+      return;
+    }
+    if (!hasMarkdown) {
+      element.textContent = text;
+      return;
+    }
+    try {
+      const {masked, segments} = protectMath(text);
+      let html = marked.parse(escapeHtml(masked), {breaks: true, gfm: true});
+      html = restrictLinks(html);
+      html = restoreMath(html, segments);
+      element.innerHTML = html;
+      element.classList.add("rich");
+      typesetMath(element);
+    } catch (error) {
+      element.textContent = text;
+    }
+  }
   function displayKind(n) { return KIND_LABEL[n.subkind] || KIND_LABEL[n.kind] || n.kind || "节点"; }
   function bookName(id) { return bookTitles[id] || id || "未命名"; }
   function pageText(n) {
@@ -280,6 +381,23 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       label = label.slice(0, maxLength) + "…";
     }
     return label;
+  }
+
+  function shortNodeName(n, maxLength) {
+    if (!n) return "";
+    let name;
+    if (n.label && /\d/.test(n.label)) {
+      name = n.label;
+    } else if (n.title && n.title.length <= 32 && !n.title.includes("$")) {
+      name = n.title;
+    } else {
+      const suffix = String(n.id || "").split(":").pop();
+      name = n.label ? `${n.label} · ${suffix}` : suffix;
+    }
+    if (maxLength && name.length > maxLength) {
+      name = name.slice(0, maxLength) + "…";
+    }
+    return name;
   }
   function edgeGroup(type) {
     if (type === "definition_term") return "concept";
@@ -308,7 +426,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       return {
         data: {
           id: n.id,
-          label: nodeLabel(n, 22),
+          label: shortNodeName(n, 22),
           kind: n.kind,
           subkind: n.subkind,
           book: n.book_id,
@@ -739,9 +857,11 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       row.append(head);
       const otherId = direction === "in" ? edge.from : edge.to;
       const other = nodeById.get(otherId);
-      row.append(el("div", "edge-title", other ? nodeLabel(other) + (other.title ? " · " + other.title : "") : otherId));
+      row.append(el("div", "edge-title", other ? shortNodeName(other, 40) : otherId));
       if (direction === "in" && edge.evidence && edge.evidence.quote) {
-        row.append(el("blockquote", "evidence", edge.evidence.quote));
+        const evidence = el("blockquote", "evidence");
+        renderRichText(evidence, edge.evidence.quote);
+        row.append(evidence);
       }
       const activate = () => selectNode(otherId);
       row.addEventListener("click", activate);
@@ -763,7 +883,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     order.forEach(id => {
       const node = nodeById.get(id);
       const item = el("li");
-      const button = el("button", "path-link", node ? nodeLabel(node) + (node.title ? " · " + node.title : "") : id);
+      const button = el("button", "path-link", node ? shortNodeName(node, 40) : id);
       button.type = "button";
       button.addEventListener("click", () => selectNode(id));
       item.append(button);
@@ -777,7 +897,10 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     detail.innerHTML = "";
     const head = el("div", "detail-head");
     head.append(el("span", "kind " + (node.subkind || node.kind), displayKind(node)));
-    head.append(el("h2", "node-title", node.title || nodeLabel(node)));
+    const heading = node.title && node.title.length <= 32 && !node.title.includes("$")
+      ? node.title
+      : shortNodeName(node, 40);
+    head.append(el("h2", "node-title", heading));
     detail.append(head);
     detail.append(el("div", "meta", [bookName(node.book_id), node.chapter, node.section, pageText(node)].filter(Boolean).join("  ·  ")));
     detail.append(el("div", "node-id", node.id));
@@ -786,10 +909,18 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       detail.append(el("div", "muted", meta.notice || "公开结构版不包含教材原文。"));
     } else {
       detail.append(el("div", "section-label", "陈述"));
-      detail.append(el("div", "statement", node.statement || "（无陈述文本）"));
+      const statement = el("div", "statement");
+      renderRichText(statement, node.statement || "（无陈述文本）");
+      detail.append(statement);
       if (node.kind === "theorem") {
         detail.append(el("div", "section-label", "证明"));
-        detail.append(node.proof ? el("div", "proof", node.proof) : el("div", "muted", "没有归属到本节点的证明。"));
+        if (node.proof) {
+          const proof = el("div", "proof");
+          renderRichText(proof, node.proof);
+          detail.append(proof);
+        } else {
+          detail.append(el("div", "muted", "没有归属到本节点的证明。"));
+        }
       }
     }
     const incomingEdges = incoming.get(node.id) || [];
@@ -804,7 +935,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       "footnote",
       meta.structure_only
         ? "公开结构版只保留章节、编号、页码与依赖边；教材原文、证明和证据引用未上传。"
-        : "自动边必须携带证明原文；定义边属于概念层依赖。公式以 LaTeX 源码显示。"
+        : "Markdown 与 LaTeX 在浏览器内渲染（MathJax SVG，离线）；自动边必须携带证明原文。"
     ));
   }
 
@@ -817,23 +948,25 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     head.append(el("h2", "node-title", meta.structure_only ? "依赖边" : "依赖证据"));
     detail.append(head);
     detail.append(el("div", "meta", (CONF_LABEL[edge.confidence] || edge.confidence) + (edge.proof_chunk ? "  ·  " + edge.proof_chunk : "")));
-    const route = el("div", "edge-title", (source ? nodeLabel(source) : edge.from) + "  →  " + (target ? nodeLabel(target) : edge.to));
+    const route = el("div", "edge-title", (source ? shortNodeName(source, 40) : edge.from) + "  →  " + (target ? shortNodeName(target, 40) : edge.to));
     detail.append(route);
     detail.append(el("div", "section-label", meta.structure_only ? "说明" : "原文"));
     if (edge.evidence && edge.evidence.quote) {
-      detail.append(el("blockquote", "evidence", edge.evidence.quote));
+      const evidence = el("blockquote", "evidence");
+      renderRichText(evidence, edge.evidence.quote);
+      detail.append(evidence);
     } else {
       detail.append(el("div", "muted", "这条边是人工添加或人工确认的，没有自动抽取的原文引用。"));
     }
     const actions = el("div", "detail-actions");
     if (source) {
-      const button = el("button", "btn", "查看 " + nodeLabel(source));
+      const button = el("button", "btn", "查看 " + shortNodeName(source, 24));
       button.type = "button";
       button.addEventListener("click", () => selectNode(source.id));
       actions.append(button);
     }
     if (target) {
-      const button = el("button", "btn", "查看 " + nodeLabel(target));
+      const button = el("button", "btn", "查看 " + shortNodeName(target, 24));
       button.type = "button";
       button.addEventListener("click", () => selectNode(target.id));
       actions.append(button);
@@ -1012,7 +1145,13 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       matches.forEach(node => {
         const button = el("button", "search-result");
         button.type = "button";
-        button.append(document.createTextNode(nodeLabel(node) + (node.title ? " · " + node.title : "")));
+        const extra = node.title
+          && node.title.length <= 24
+          && !node.title.includes("$")
+          && node.title !== node.label
+          ? " · " + node.title
+          : "";
+        button.append(document.createTextNode(shortNodeName(node, 40) + extra));
         button.append(el("small", null, node.id));
         button.addEventListener("click", () => {
           selectNode(node.id);

@@ -663,7 +663,8 @@ D:\project\
 - 84 条未解析/歧义引用。
 - Demo：12 节点、11 条边、9 个证明全部归属；8 个 demo 黄金证明的 attachment accuracy / edge precision / recall 均为 1.000。
 - 结构化公开导出：`render --structure-only` 剥离陈述、证明、别名、source_chunks 和证据引用，仅保留章节、编号、页码与依赖边。
-- 自动化测试：53 个通过。
+- 证据页使用 vendored `marked` + MathJax `tex-svg` 在浏览器内离线渲染 Markdown/LaTeX；结构版不加载这两个依赖。
+- 自动化测试：54 个通过。
 
 ### 16.3 尚未完成
 

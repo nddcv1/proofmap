@@ -1,3 +1,4 @@
+from copy import deepcopy
 from pathlib import Path
 
 from proofmap.render import render_html
@@ -36,11 +37,28 @@ def test_render_embeds_data_and_vendor(tmp_path: Path):
     render_html(graph(), out)
     html = out.read_text(encoding="utf-8")
     assert "__GRAPH_JSON__" not in html
+    assert "__MARKED_JS__" not in html
+    assert "__MATHJAX_JS__" not in html
     assert "定理 1.1" in html
     assert "cytoscape" in html.lower()
     assert "<script src=" not in html
     assert 'src="http' not in html
     assert out.stat().st_size > 100_000
+
+
+def test_structure_render_omits_math_vendor(tmp_path: Path):
+    evidence = graph()
+    evidence_out = tmp_path / "evidence.html"
+    render_html(evidence, evidence_out)
+
+    structure = deepcopy(evidence)
+    structure["metadata"]["structure_only"] = True
+    structure["metadata"]["notice"] = "公开结构版"
+    structure_out = tmp_path / "structure.html"
+    render_html(structure, structure_out)
+
+    assert evidence_out.stat().st_size > structure_out.stat().st_size + 1_000_000
+    assert "__MATHJAX_JS__" not in structure_out.read_text(encoding="utf-8")
 
 
 def test_render_escapes_script_closer(tmp_path: Path):

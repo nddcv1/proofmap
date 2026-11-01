@@ -14,6 +14,7 @@ def render_html(
     out_path: str | Path,
     title: str = "ProofMap · 数学教材先修地图",
 ) -> None:
+    structure_only = bool(graph.get("metadata", {}).get("structure_only"))
     template = _TEMPLATE.read_text(encoding="utf-8")
     payload = json.dumps(graph, ensure_ascii=False, sort_keys=True).replace(
         "</", "<\\/"
@@ -23,6 +24,8 @@ def render_html(
         "__CYTOSCAPE_JS__": (_VENDOR / "cytoscape.min.js").read_text(encoding="utf-8"),
         "__DAGRE_JS__": (_VENDOR / "dagre.min.js").read_text(encoding="utf-8"),
         "__CY_DAGRE_JS__": (_VENDOR / "cytoscape-dagre.js").read_text(encoding="utf-8"),
+        "__MARKED_JS__": "" if structure_only else (_VENDOR / "marked.min.js").read_text(encoding="utf-8"),
+        "__MATHJAX_JS__": "" if structure_only else (_VENDOR / "mathjax-tex-svg.js").read_text(encoding="utf-8"),
         "__GRAPH_JSON__": payload,
     }
     for placeholder, value in replacements.items():
