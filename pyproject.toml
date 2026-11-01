@@ -8,10 +8,17 @@ version = "0.1.0"
 description = "Evidence-backed prerequisite graphs for informal math textbooks and notes"
 readme = "README.md"
 requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "nddcv1"}]
+keywords = ["mathematics", "knowledge-graph", "education", "prerequisite"]
 dependencies = ["pyyaml>=6.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+
+[project.urls]
+Homepage = "https://github.com/nddcv1/proofmap"
+Repository = "https://github.com/nddcv1/proofmap"
 
 [project.scripts]
 proofmap = "proofmap.cli:main"
@@ -20,4 +27,7 @@ proofmap = "proofmap.cli:main"
 include = ["proofmap*"]
 
 [tool.setuptools.package-data]
-proofmap = ["render/*.html", "render/vendor/*.js"]
+proofmap = ["render/*.html", "render/vendor/*.js", "render/vendor/*.LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
