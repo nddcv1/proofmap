@@ -164,6 +164,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
         <label class="chip"><input type="checkbox" data-edge-group="concept">定义概念边</label>
         <label class="chip"><input type="checkbox" data-edge-group="anaphora">指代引用（上述定理等）</label>
         <label class="chip"><input type="checkbox" data-edge-group="llm" disabled>LLM 推断（v0.2，未启用）</label>
+        <label class="chip"><input type="checkbox" id="show-isolated">显示孤立节点（无依赖）</label>
       </div>
     </section>
     <section class="side-section">
@@ -241,6 +242,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     selected: null,
     focus: null,
     path: [],
+    showIsolated: true,
     edgeGroups: {theorem: true, concept: true, anaphora: false, llm: false},
   };
 
@@ -258,11 +260,15 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     if (n.pdf_page && n.pdf_page !== n.printed_page) parts.push("PDF p." + n.pdf_page);
     return parts.join(" · ");
   }
-  function nodeLabel(n) {
+  function nodeLabel(n, maxLength) {
     if (!n) return "";
-    return n.label && !/^(定义|定理|引理|推论|命题)$/.test(n.label)
+    let label = n.label && !/^(定义|定理|引理|推论|命题)$/.test(n.label)
       ? n.label
       : (n.title || n.label || n.id);
+    if (maxLength && label.length > maxLength) {
+      label = label.slice(0, maxLength) + "…";
+    }
+    return label;
   }
   function edgeGroup(type) {
     if (type === "definition_term") return "concept";
@@ -271,7 +277,10 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     return "theorem";
   }
   function isNodeVisible(n) {
-    return !!n && n.book_id === state.book && (state.chapter === "all" || n.chapter === state.chapter);
+    return !!n
+      && n.book_id === state.book
+      && (state.chapter === "all" || n.chapter === state.chapter)
+      && (state.showIsolated || !isolatedNodes.has(n.id));
   }
   function isEdgeVisible(e) {
     const s = nodeById.get(e.from);
@@ -288,7 +297,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       return {
         data: {
           id: n.id,
-          label: nodeLabel(n),
+          label: nodeLabel(n, 22),
           kind: n.kind,
           subkind: n.subkind,
           book: n.book_id,
@@ -346,7 +355,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     {selector: "node.lemma", style: {"background-color": "#9A6B2F", "shape": "triangle", "width": 33, "height": 31}},
     {selector: "node.corollary", style: {"background-color": "#9A6B2F", "shape": "triangle", "width": 31, "height": 29}},
     {selector: "node.proposition", style: {"background-color": "#6B4E71", "shape": "diamond"}},
-    {selector: "node.isolated", style: {"opacity": 0.42, "border-style": "dashed", "border-color": "#7A8A83"}},
+    {selector: "node.isolated", style: {"opacity": 0.55, "border-style": "dashed", "border-color": "#8A9890"}},
     {selector: "node.cycle", style: {"border-color": "#B23A2E", "border-width": 2.5}},
     {selector: "node:selected", style: {"border-color": "#B23A2E", "border-width": 3.5}},
     {selector: "node.path", style: {"border-color": "#B23A2E", "border-width": 3}},
@@ -401,24 +410,52 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
   const searchWrap = document.querySelector(".search-wrap");
   const toastEl = document.getElementById("toast");
   const canvasEmpty = document.getElementById("canvas-empty");
+  const showIsolatedInput = document.getElementById("show-isolated");
+  state.showIsolated = rawNodes.length
+    ? isolatedNodes.size / rawNodes.length <= 0.2
+    : true;
+  showIsolatedInput.checked = state.showIsolated;
 
-  const books = [...new Set(rawNodes.map(n => n.book_id))];
+  const bookCounts = new Map();
+  rawNodes.forEach(n => bookCounts.set(n.book_id, (bookCounts.get(n.book_id) || 0) + 1));
+  const books = [...new Set(rawNodes.map(n => n.book_id))].sort(
+    (a, b) => (bookCounts.get(b) - bookCounts.get(a)) || a.localeCompare(b)
+  );
   if (books.length) {
-    state.book = books[0];
+    state.book = meta.default_book && bookCounts.has(meta.default_book)
+      ? meta.default_book
+      : books[0];
     books.forEach(id => bookSelect.append(new Option(bookName(id), id)));
     bookSelect.value = state.book;
   }
 
   function populateChapters(preferred) {
     chapterSelect.innerHTML = "";
-    const chapters = [...new Set(rawNodes.filter(n => n.book_id === state.book).map(n => n.chapter))];
+    const inBook = rawNodes.filter(n => n.book_id === state.book);
+    const chapters = [...new Set(inBook.map(n => n.chapter))];
     chapterSelect.append(new Option("全部章节", "all"));
     chapters.forEach(ch => chapterSelect.append(new Option(ch, ch)));
-    const count = rawNodes.filter(n => n.book_id === state.book).length;
     if (preferred) {
       state.chapter = preferred;
+    } else if (inBook.length <= 40 || chapters.length <= 1) {
+      state.chapter = "all";
     } else {
-      state.chapter = count <= 40 || chapters.length <= 1 ? "all" : (chapters[0] || "all");
+      const chapterCounts = new Map();
+      inBook.forEach(n => chapterCounts.set(n.chapter, (chapterCounts.get(n.chapter) || 0) + 1));
+      const chapterEdges = new Map();
+      edges.forEach(edge => {
+        const source = nodeById.get(edge.from);
+        const target = nodeById.get(edge.to);
+        if (source && target && source.book_id === state.book && source.chapter === target.chapter) {
+          chapterEdges.set(source.chapter, (chapterEdges.get(source.chapter) || 0) + 1);
+        }
+      });
+      const densest = [...chapterCounts.entries()].sort(
+        (a, b) => ((chapterEdges.get(b[0]) || 0) - (chapterEdges.get(a[0]) || 0))
+          || (b[1] - a[1])
+          || a[0].localeCompare(b[0])
+      )[0];
+      state.chapter = densest ? densest[0] : "all";
     }
     chapterSelect.value = state.chapter;
   }
@@ -431,6 +468,12 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     ruleNote.textContent = cycleCount
       ? "每条自动边都有原文证据 · " + cycleCount + " 个可疑环"
       : "每条自动边都有原文证据";
+    canvasEmpty.hidden = visibleNodeCount > 0;
+    if (!visibleNodeCount) {
+      canvasEmpty.textContent = rawNodes.length
+        ? "当前过滤下没有可显示的节点。切换章节，或勾选“显示孤立节点”。"
+        : "这个数据集没有可显示的节点。";
+    }
   }
 
   function syncSelectionVisibility() {
@@ -520,19 +563,72 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     updateCounts();
   }
 
+  function chooseLayout(visible) {
+    if (layoutName !== "dagre") return layoutName;
+    const visibleNodes = visible.nodes();
+    const visibleEdges = visible.edges();
+    if (visibleNodes.length <= 2) return "dagre";
+    const parent = new Map(visibleNodes.map(node => [node.id(), node.id()]));
+    function find(nodeId) {
+      let current = nodeId;
+      while (parent.get(current) !== current) {
+        parent.set(current, parent.get(parent.get(current)));
+        current = parent.get(current);
+      }
+      return current;
+    }
+    function union(a, b) {
+      const rootA = find(a);
+      const rootB = find(b);
+      if (rootA !== rootB) parent.set(rootA, rootB);
+    }
+    visibleEdges.forEach(edge => {
+      const source = edge.data("source");
+      const target = edge.data("target");
+      if (parent.has(source) && parent.has(target)) union(source, target);
+    });
+    const components = new Set(visibleNodes.map(node => find(node.id()))).size;
+    if (components > 3 || visibleEdges.length < visibleNodes.length * 0.6) {
+      return "concentric";
+    }
+    return "dagre";
+  }
+
   function runLayout(animate) {
-    const visible = cy.nodes().filter(node => !node.hasClass("filtered"));
-    if (!visible.length) return;
+    const visible = cy.elements().filter(element => !element.hasClass("filtered"));
+    if (!visible.nodes().length) return;
     const common = {
       padding: 44,
       fit: true,
       animate: !!animate && !reducedMotion,
       animationDuration: 420,
     };
-    const options = layoutName === "dagre"
-      ? Object.assign({name: "dagre", rankDir: "TB", nodeSep: 42, rankSep: 74, edgeSep: 14}, common)
-      : Object.assign({name: "cose", nodeRepulsion: 9000, idealEdgeLength: 100}, common);
-    cy.layout(options).run();
+    const kind = layoutName === "dagre" ? chooseLayout(visible) : layoutName;
+    let options;
+    if (kind === "dagre") {
+      options = Object.assign(
+        {name: "dagre", rankDir: "TB", nodeSep: 58, rankSep: 86, edgeSep: 16},
+        common
+      );
+    } else if (kind === "concentric") {
+      options = Object.assign(
+        {
+          name: "concentric",
+          concentric: node => node.connectedEdges().filter(edge => !edge.hasClass("filtered")).length,
+          levelWidth: () => 3,
+          minNodeSpacing: 34,
+        },
+        common
+      );
+    } else {
+      options = Object.assign(
+        {name: "cose", nodeRepulsion: 9000, idealEdgeLength: 100},
+        common
+      );
+    }
+    const layout = visible.layout(options);
+    layout.one("layoutstop", () => cy.fit(visible, 44));
+    layout.run();
   }
 
   function learningPath(id) {
@@ -726,6 +822,10 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
   function selectNode(id, options) {
     const node = nodeById.get(id);
     if (!node) return;
+    if (isolatedNodes.has(id) && !state.showIsolated) {
+      state.showIsolated = true;
+      showIsolatedInput.checked = true;
+    }
     if (state.book !== node.book_id) {
       state.book = node.book_id;
       bookSelect.value = state.book;
@@ -806,6 +906,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     document.querySelectorAll("[data-edge-group]").forEach(input => {
       input.checked = !!state.edgeGroups[input.dataset.edgeGroup];
     });
+    showIsolatedInput.checked = state.showIsolated;
   }
 
   function updateSearch() {
@@ -841,12 +942,17 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
   }
 
   function resetView() {
-    state.book = books[0] || null;
+    state.book = meta.default_book && books.includes(meta.default_book)
+      ? meta.default_book
+      : (books[0] || null);
     bookSelect.value = state.book || "";
     state.selected = null;
     state.focus = null;
     state.path = [];
     state.edgeGroups = {theorem: true, concept: true, anaphora: false, llm: false};
+    state.showIsolated = rawNodes.length
+      ? isolatedNodes.size / rawNodes.length <= 0.2
+      : true;
     writeGroupInputs();
     populateChapters();
     searchInput.value = "";
@@ -882,6 +988,11 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       readGroupInputs();
       applyFilters();
     });
+  });
+  showIsolatedInput.addEventListener("change", () => {
+    state.showIsolated = showIsolatedInput.checked;
+    applyFilters();
+    runLayout(true);
   });
   document.querySelectorAll("[data-focus]").forEach(button => {
     button.addEventListener("click", () => setFocus(button.dataset.focus));

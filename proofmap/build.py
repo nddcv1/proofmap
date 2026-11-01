@@ -106,9 +106,17 @@ def build_all(
         book_id = str(chunk.get("book_id", ""))
         book_titles.setdefault(book_id, str(chunk.get("book_title", book_id)))
 
+    book_counts = Counter(node.book_id for node in nodes)
+    default_book = (
+        sorted(book_counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+        if book_counts
+        else None
+    )
+
     metadata = {
         "book_titles": book_titles,
         "books": sorted(book_titles),
+        "default_book": default_book,
         "source_chunks": len(chunks),
         "chunk_order": chunk_order,
     }

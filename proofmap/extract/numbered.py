@@ -7,7 +7,9 @@ from proofmap.extract.evidence import make_evidence
 from proofmap.model import Edge
 from proofmap.resolve import NodeIndex
 
-_REF_RE = re.compile(r"(?P<kind>定理|引理|推论|命题|定义)\s*(?P<num>\d+(?:\.\d+)*)")
+_REF_RE = re.compile(
+    r"(?P<kind>定理|引理|推论|命题|定义)\s*(?P<num>\d+(?:\.\d+)*[′'’*＊]*)"
+)
 
 
 def extract_numbered_edges(

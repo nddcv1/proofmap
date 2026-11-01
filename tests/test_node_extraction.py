@@ -45,6 +45,33 @@ def test_parses_named_parenthetical_and_subkind():
     assert nodes[1].subkind == "corollary"
 
 
+def test_duplicate_numeric_labels_in_same_section_are_merged():
+    chunks = [
+        chunk("c1", "theorem", "定理 1.1 若 A 则 B。"),
+        chunk("c2", "theorem", "定理 1.1 且若 B 则 C。"),
+    ]
+    nodes, audit = extract_nodes(chunks)
+    assert len(nodes) == 1
+    assert nodes[0].id == "demo:定理1.1"
+    assert nodes[0].source_chunks == ["c1", "c2"]
+    assert "若 A 则 B" in nodes[0].statement
+    assert "若 B 则 C" in nodes[0].statement
+    assert any("merged" in msg for msg in audit)
+
+
+def test_prime_suffixed_labels_are_distinct():
+    chunks = [
+        chunk("c1", "theorem", "定理 1.1 第一版本。"),
+        chunk("c2", "theorem", "定理 1.1′ 第二版本。"),
+    ]
+    nodes, audit = extract_nodes(chunks)
+    assert len(nodes) == 2
+    assert {node.label for node in nodes} == {"定理 1.1", "定理 1.1′"}
+    assert nodes[0].id == "demo:定理1.1"
+    assert nodes[1].id == "demo:定理1.1′"
+    assert audit == []
+
+
 def test_duplicate_numeric_labels_get_fallback_ids_and_audit():
     chunks = [
         chunk("c1", "theorem", "定理 1.1 第一处。"),

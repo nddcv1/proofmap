@@ -9,7 +9,7 @@ from proofmap.model import Node, ProofAttachment
 FAMILY_KINDS = {"theorem", "example", "exercise"}
 DISTANCE_SCORES = {1: 0.40, 2: 0.30, 3: 0.22, 4: 0.15, 5: 0.10}
 _CANDIDATE_LABEL_RE = re.compile(
-    r"^\s*(定理|引理|推论|命题|例|例题|习题)\s*([0-9]+(?:\.[0-9]+)*)?"
+    r"^\s*(定理|引理|推论|命题|例|例题|习题)\s*([0-9]+(?:\.[0-9]+)*[′'’*＊]*)?"
 )
 _INLINE_PROOF_RE = re.compile(r"(?:^|[\n。；;])\s*证明\s*[:：]?")
 _WS_RE = re.compile(r"\s+")

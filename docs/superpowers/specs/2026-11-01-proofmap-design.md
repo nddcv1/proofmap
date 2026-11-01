@@ -642,6 +642,33 @@ D:\project\
 - 跨书依赖：v0.3；v0.1 按书隔离。
 - Obsidian 插件：暂不做；先验证 HTML 的使用频率。
 
+## 16. v0.1 实现偏差与实测（2026-11-01）
+
+### 16.1 与最初设计的偏差
+
+- 渲染器实现为包 `proofmap/render/`（`render_html` 在 `__init__.py`），而不是单文件 `render.py`；模板与 vendor 文件放在同一目录。
+- 新增 `proofmap/build.py` 作为端到端流水线入口，CLI 只是薄封装。
+- 证明归属：同节、距离 1 的候选在分数 ≥0.55 时直接归属，不再要求 0.15 分差；距离 ≥2 仍要求 0.15。真实数据表明“证明里提到相邻定理名”会让紧邻定理因分差 0.10 被误判歧义。
+- 重复编号：同书、同章、同节的重复编号视为分页/重复排版，合并为一个节点（合并 statement、source_chunks、aliases）；跨章节的重复编号保留为独立 fallback 节点。编号后缀 `′` / `’` / `*` 会保留，避免把“定理 9.2.2′”误合并进“定理 9.2.2”。
+- 命名引用：拉丁别名至少 3 个字符才参与匹配；定义节点不参与 `named_ref`（定义由 `definition_term` 负责）。
+- 证据 `quote` 取匹配所在的句子（上限 160 字符），而不是固定 ±40 字符，避免短证明里每条边重复整段证明。
+- 同一对节点只保留最强的一条证据边，优先级 `manual > numbered_ref > named_ref > llm > anaphora_ref > definition_term`。
+- HTML 默认显示节点最多的书、依赖最密的章节，并在孤立节点比例 >20% 时默认隐藏孤立节点；可手动开启。稀疏图用 `concentric` 布局，稠密图用 `dagre`。
+- 跨书引用不解析；例如数分下引用数分上的定理会进入 `edge_audit.md`。
+
+### 16.2 实测基线
+
+- 本地 math-kb 5 本书：545 节点、151 条边、0 个环。
+- 475 个证明：386 `attached`、55 `ambiguous`、34 `unresolved`。
+- 84 条未解析/歧义引用。
+- Demo：12 节点、11 条边、9 个证明全部归属；8 个 demo 黄金证明的 attachment accuracy / edge precision / recall 均为 1.000。
+- 自动化测试：50 个通过。
+
+### 16.3 尚未完成
+
+- 30 个真实教材证明的黄金集尚未标注；真实数据不报告 precision/recall。
+- LLM 闭集补边、Obsidian 笔记覆盖、跨书依赖、隐性定义抽取均为后续版本。
+
 ## 附录 A：数据核查方法
 
 基线数字来自对 `D:\zzt\math-kb\data\chunks.jsonl` 的一次性统计：

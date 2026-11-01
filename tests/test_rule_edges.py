@@ -61,6 +61,17 @@ def test_named_alias_produces_edge_and_generic_alias_is_ignored():
     assert [e.from_id for e in edges] == ["b:定理1.1"]
 
 
+def test_single_letter_alias_is_ignored():
+    source = node("b:定理1.1", "定理 1.1", aliases=["定理 1.1", "g"])
+    target = node("b:定理1.2", "定理 1.2")
+    index = NodeIndex([source, target])
+    edges, issues = extract_named_edges(
+        "p1", "由 g 可知。", "b:定理1.2", index, False
+    )
+    assert edges == []
+    assert issues == []
+
+
 def test_definition_alias_is_not_a_named_theorem_reference():
     definition = Node(
         id="b:定义1.1",

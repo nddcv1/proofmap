@@ -12,10 +12,14 @@ GENERIC_ALIASES = {
     "微分中值定理",
     "基本定理",
     "定理",
+    "引理",
+    "推论",
+    "命题",
+    "定义",
     "公式",
     "不等式",
 }
-_NUMERIC_LABEL_RE = re.compile(r"(定理|引理|推论|命题|定义)\d+(?:\.\d+)*")
+_NUMERIC_LABEL_RE = re.compile(r"(定理|引理|推论|命题|定义)\d+(?:\.\d+)*[′'’*＊]*")
 
 
 def _eligible(alias: str) -> bool:
@@ -24,7 +28,7 @@ def _eligible(alias: str) -> bool:
     if _NUMERIC_LABEL_RE.fullmatch(alias):
         return False
     if re.search(r"[a-z]", alias):
-        return True
+        return len(alias) >= 3
     return len(alias) >= 4
 
 
