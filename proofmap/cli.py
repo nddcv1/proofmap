@@ -50,6 +50,11 @@ def _parser() -> argparse.ArgumentParser:
     build.add_argument("--book", type=_books, default=None, help="comma-separated book ids")
     build.add_argument("--include-ambiguous", action="store_true")
     build.add_argument("--corrections", default=None, help="corrections.yaml")
+    build.add_argument(
+        "--names",
+        default="config/theorem_names.yaml",
+        help="YAML with a top-level names mapping (default: config/theorem_names.yaml)",
+    )
 
     audit = subparsers.add_parser("audit", parents=[_common()], help="summarize audits")
     audit.add_argument("--build", default="build")
@@ -222,6 +227,7 @@ def main(argv: list[str] | None = None) -> int:
                 books=args.book,
                 include_ambiguous=args.include_ambiguous,
                 corrections_path=args.corrections,
+                names_path=args.names,
             )
             if args.json:
                 print(json.dumps(summary, ensure_ascii=False, indent=2))

@@ -27,6 +27,8 @@ def test_build_demo_produces_graph_and_audits(tmp_path: Path):
     assert graph["metadata"]["default_book"] == "demo"
     assert graph["metadata"]["counts"]["nodes"]["total"] == 12
     assert graph["metadata"]["counts"]["edges"]["total"] > 0
+    theorem = next(node for node in graph["nodes"] if node["id"] == "demo:定理1.1")
+    assert theorem["display_name"] == "极限唯一性"
 
 
 def test_build_is_deterministic(tmp_path: Path):
@@ -69,6 +71,18 @@ def test_default_book_is_the_largest(tmp_path: Path):
     build_all(chunks, tmp_path / "out")
     graph = read_json(tmp_path / "out" / "graph.json")
     assert graph["metadata"]["default_book"] == "b"
+
+
+def test_names_file_overrides_display_name(tmp_path: Path):
+    names = tmp_path / "names.yaml"
+    names.write_text(
+        'names:\n  "demo:定理1.1": 自定义极限唯一性\n',
+        encoding="utf-8",
+    )
+    build_all(DEMO, tmp_path / "out", books=["demo"], names_path=names)
+    graph = read_json(tmp_path / "out" / "graph.json")
+    theorem = next(node for node in graph["nodes"] if node["id"] == "demo:定理1.1")
+    assert theorem["display_name"] == "自定义极限唯一性"
 
 
 def test_book_filter_with_no_matches(tmp_path: Path):

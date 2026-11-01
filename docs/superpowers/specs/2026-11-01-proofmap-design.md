@@ -654,17 +654,20 @@ D:\project\
 - 证据 `quote` 取匹配所在的句子（上限 160 字符），而不是固定 ±40 字符，避免短证明里每条边重复整段证明。
 - 同一对节点只保留最强的一条证据边，优先级 `manual > numbered_ref > named_ref > llm > anaphora_ref > definition_term`。
 - HTML 默认显示节点最多的书、依赖最密的章节，并在孤立节点比例 >20% 时默认隐藏孤立节点；可手动开启。稀疏图用 `concentric` 布局，稠密图用 `dagre`。
+- `Node` 增加 `display_name`。定理节点优先使用教材括注名、常用定理名、章节主题或简洁描述名；重名追加编号；可用 `corrections.yaml` 的 `names` 段覆盖。没有正式名称的定理会得到自动描述名，而不是只显示编号。
+- 当前公开构建只保留 `shufeng` 和 `shuxia`（数分上/下）；高数 C 习题课讲义、线性代数、数学分析脉络从 ProofMap 图中排除，math-kb 源数据未删除。
+- 结构化公开导出保留短显示名、章节、编号、页码和依赖边；剥离陈述、证明、别名、source_chunks 和证据引用。
+- 证据页使用 vendored `marked` + MathJax `tex-svg` 在浏览器内离线渲染 Markdown/LaTeX；结构版不加载这两个依赖。
 - 跨书引用不解析；例如数分下引用数分上的定理会进入 `edge_audit.md`。
 
-### 16.2 实测基线
+### 16.2 实测基线（数学分析子集）
 
-- 本地 math-kb 5 本书：545 节点、151 条边、0 个环。
-- 475 个证明：386 `attached`、55 `ambiguous`、34 `unresolved`。
-- 84 条未解析/歧义引用。
+- 2 本书、17 章：357 节点、115 条边、0 个环。
+- 数学分析上：9 章，143 节点；数学分析下：8 章，214 节点。
+- 365 个证明中 316 `attached`、37 `ambiguous`、12 `unresolved`；64 条未解析/歧义引用。
+- 255 个定理节点全部有显示名；244 个名称在全集内唯一，重名主要发生在不同书。
 - Demo：12 节点、11 条边、9 个证明全部归属；8 个 demo 黄金证明的 attachment accuracy / edge precision / recall 均为 1.000。
-- 结构化公开导出：`render --structure-only` 剥离陈述、证明、别名、source_chunks 和证据引用，仅保留章节、编号、页码与依赖边。
-- 证据页使用 vendored `marked` + MathJax `tex-svg` 在浏览器内离线渲染 Markdown/LaTeX；结构版不加载这两个依赖。
-- 自动化测试：54 个通过。
+- 自动化测试：62 个通过。
 
 ### 16.3 尚未完成
 

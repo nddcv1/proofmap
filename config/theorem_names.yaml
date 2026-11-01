@@ -1,0 +1,36 @@
+# Human-curated theorem display names.
+# Keys are node ids from the build; values override the automatic names.
+# This starter file curates the default Chapter 9 view; extend it freely.
+names:
+  "shuxia:定理9.1.1": 级数收敛的必要条件
+  "shuxia:定理9.1.2": 级数的线性性
+  "shuxia:定理9.1.3": 收敛级数的括号结合律
+  "shuxia:定理9.2.1": 上/下确界的可达性
+  "shuxia:定理9.2.2": 上极限与下极限的收敛准则
+  "shuxia:定理9.2.2′": 上极限与下极限的广义收敛准则
+  "shuxia:定理9.2.3": 上极限的等价刻画
+  "shuxia:定理9.2.4": 上极限的次可加性
+  "shuxia:定理9.2.5": 上极限的乘积性质
+  "shuxia:定理9.2.6": 最大/最小极限点
+  "shuxia:定理9.3.1": 正项级数的收敛原理
+  "shuxia:定理9.3.2": 比较判别法
+  "shuxia:定理9.3.2′": 比较判别法的极限形式
+  "shuxia:定理9.3.3": Cauchy 判别法
+  "shuxia:定理9.3.4": d'Alembert 判别法
+  "shuxia:引理9.3.1": Cauchy 与 d'Alembert 判别法的关系
+  "shuxia:定理9.3.5": Raabe 判别法
+  "shuxia:定理9.3.6": 积分判别法
+  "shuxia:定理9.4.1": 级数的 Cauchy 收敛原理
+  "shuxia:定理9.4.2": Leibniz 判别法
+  "shuxia:引理9.4.1": Abel 变换
+  "shuxia:引理9.4.2": Abel 引理
+  "shuxia:定理9.4.3": 级数的 A-D 判别法
+  "shuxia:定理9.4.4": 绝对收敛与条件收敛的分解
+  "shuxia:定理9.4.5": 绝对收敛级数的更序不变性
+  "shuxia:定理9.4.6": Riemann 重排定理
+  "shuxia:定理9.4.7": 绝对收敛级数的乘积
+  "shuxia:定理9.5.1": 无穷乘积收敛的必要条件
+  "shuxia:定理9.5.2": 无穷乘积与对数级数的等价性
+  "shuxia:推论9.5.1": 无穷乘积与级数的等价性（一）
+  "shuxia:推论9.5.2": 无穷乘积与级数的等价性（二）
+  "shuxia:定理9.5.3": 无穷乘积的绝对收敛性

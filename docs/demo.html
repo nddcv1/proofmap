@@ -4480,7 +4480,7 @@ window.MathJax = {
 <script>
 (function(){
   "use strict";
-  const DATA = {"edges": [{"confidence": "inferred", "evidence": {"char_end": 185, "char_start": 68, "quote": "由数列极限的定义，对任意 $\\varepsilon>0$，存在 $N_1,N_2$，当 $n>\\max(N_1,N_2)$ 时同时有 $|x_n-a|<\\varepsilon/2$ 与 $|x_n-b|<\\varepsilon/2$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0005-0005", "schema_version": 1, "source": "rule", "to": "demo:定理1.1", "type": "definition_term"}, {"confidence": "explicit", "evidence": {"char_end": 73, "char_start": 16, "quote": "由定义 1.1，取 $\\varepsilon=1$，存在 $N$，当 $n>N$ 时 $|x_n|<|a|+1$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0007-0007", "schema_version": 1, "source": "rule", "to": "demo:定理1.2", "type": "numbered_ref"}, {"confidence": "inferred", "evidence": {"char_end": 120, "char_start": 96, "quote": "再根据有界数列的定义，$\\{x_n\\}$ 有界。"}, "from": "demo:定义1.2", "proof_chunk": "demo-p0007-0007", "schema_version": 1, "source": "rule", "to": "demo:定理1.2", "type": "definition_term"}, {"confidence": "explicit", "evidence": {"char_end": 90, "char_start": 0, "quote": "证明：由定义 1.1，对任意 $\\varepsilon>0$，存在 $N$，当 $n>N$ 时 $L-\\varepsilon<a_n$ 且 $c_n<L+\\varepsilon$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0011-0011", "schema_version": 1, "source": "rule", "to": "demo:定理1.3", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 93, "char_start": 54, "quote": "由确界原理，它有上确界 $a$，再按定义 1.1 验证 $x_n\\to a$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0018-0018", "schema_version": 1, "source": "rule", "to": "demo:定理1.4", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 54, "char_start": 41, "quote": "由定义 1.2，它有上界。"}, "from": "demo:定义1.2", "proof_chunk": "demo-p0018-0018", "schema_version": 1, "source": "rule", "to": "demo:定理1.4", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 41, "char_start": 27, "quote": "由定义 1.3，它单调递增。"}, "from": "demo:定义1.3", "proof_chunk": "demo-p0018-0018", "schema_version": 1, "source": "rule", "to": "demo:定理1.4", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 47, "char_start": 0, "quote": "证明：由 Rolle 定理可知，存在 $\\xi\\in(a,b)$ 使 $f'(\\xi)=0$。"}, "from": "demo:定理2.1", "proof_chunk": "demo-p0021-0021", "schema_version": 1, "source": "rule", "to": "demo:定理2.2", "type": "named_ref"}, {"confidence": "tentative", "evidence": {"char_end": 45, "char_start": 0, "quote": "证明：由上述定理可知存在 $\\xi$ 使 $f'(\\xi)=0$，即 $\\xi$ 为驻点。"}, "from": "demo:定理2.2", "proof_chunk": "demo-p0023-0023", "schema_version": 1, "source": "rule", "to": "demo:定理2.3", "type": "anaphora_ref"}, {"confidence": "explicit", "evidence": {"char_end": 70, "char_start": 0, "quote": "证明：由定义 1.1，对任意 $\\varepsilon>0$，存在 $N$，当 $n>N$ 时 $|x_n-a|<\\varepsilon$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0013-0013", "schema_version": 1, "source": "rule", "to": "demo:引理1.1", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 21, "char_start": 0, "quote": "证明：由定理 1.2 可知，收敛数列有界；"}, "from": "demo:定理1.2", "proof_chunk": "demo-p0015-0015", "schema_version": 1, "source": "rule", "to": "demo:推论1.1", "type": "numbered_ref"}], "metadata": {"book_titles": {"demo": "极小分析讲义"}, "books": ["demo"], "counts": {"attachments": {"attached": 9, "by_status": {"attached": 9}, "non_graph": 1, "total": 9}, "edges": {"by_confidence": {"explicit": 8, "inferred": 2, "tentative": 1}, "by_type": {"anaphora_ref": 1, "definition_term": 2, "named_ref": 1, "numbered_ref": 7}, "total": 11}, "nodes": {"by_kind": {"definition": 3, "theorem": 9}, "total": 12}}, "cycles": [], "default_book": "demo", "isolated_nodes": [], "source_chunks": 23}, "nodes": [{"aliases": ["定义 1.1", "定义1.1", "数列极限"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:定义1.1", "kind": "definition", "label": "定义 1.1", "order": 0, "pdf_page": 1, "printed_page": 1, "proof": "", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0001-0001"], "statement": "定义 1.1（数列极限）设 $\\{x_n\\}$ 是数列，$a\\in\\mathbb{R}$。若对任意 $\\varepsilon>0$，存在正整数 $N$，当 $n>N$ 时 $|x_n-a|<\\varepsilon$，则称 $\\{x_n\\}$ 收敛于 $a$。", "subkind": "definition", "title": "数列极限"}, {"aliases": ["定义 1.2", "定义1.2", "有界数列"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:定义1.2", "kind": "definition", "label": "定义 1.2", "order": 1, "pdf_page": 2, "printed_page": 2, "proof": "", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0002-0002"], "statement": "定义 1.2（有界数列）若存在 $M>0$，使得对一切正整数 $n$ 有 $|x_n|\\le M$，则称 $\\{x_n\\}$ 有界。", "subkind": "definition", "title": "有界数列"}, {"aliases": ["定理 1.1", "定理1.1", "极限唯一性"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:定理1.1", "kind": "theorem", "label": "定理 1.1", "order": 2, "pdf_page": 3, "printed_page": 3, "proof": "证明：设 $x_n\\to a$ 且 $x_n\\to b$。由数列极限的定义，对任意 $\\varepsilon>0$，存在 $N_1,N_2$，当 $n>\\max(N_1,N_2)$ 时同时有 $|x_n-a|<\\varepsilon/2$ 与 $|x_n-b|<\\varepsilon/2$。于是 $|a-b|<\\varepsilon$，故 $a=b$。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0003-0003"], "statement": "定理 1.1（极限唯一性）若数列 $\\{x_n\\}$ 收敛，则它的极限唯一。", "subkind": "theorem", "title": "极限唯一性"}, {"aliases": ["定理 1.2", "定理1.2", "收敛数列有界"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:定理1.2", "kind": "theorem", "label": "定理 1.2", "order": 5, "pdf_page": 6, "printed_page": 6, "proof": "证明：设 $x_n\\to a$。由定义 1.1，取 $\\varepsilon=1$，存在 $N$，当 $n>N$ 时 $|x_n|<|a|+1$。再根据有界数列的定义，$\\{x_n\\}$ 有界。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0006-0006"], "statement": "定理 1.2（收敛数列有界）收敛数列必有界。", "subkind": "theorem", "title": "收敛数列有界"}, {"aliases": ["夹逼定理", "定理 1.3", "定理1.3"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:定理1.3", "kind": "theorem", "label": "定理 1.3", "order": 9, "pdf_page": 10, "printed_page": 10, "proof": "证明：由定义 1.1，对任意 $\\varepsilon>0$，存在 $N$，当 $n>N$ 时 $L-\\varepsilon<a_n$ 且 $c_n<L+\\varepsilon$。由 $a_n\\le b_n\\le c_n$ 得 $L-\\varepsilon<b_n<L+\\varepsilon$，故 $b_n\\to L$。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0010-0010"], "statement": "定理 1.3（夹逼定理）若 $a_n\\le b_n\\le c_n$，且 $a_n\\to L$、$c_n\\to L$，则 $b_n\\to L$。", "subkind": "theorem", "title": "夹逼定理"}, {"aliases": ["子列收敛", "引理 1.1", "引理1.1"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:引理1.1", "kind": "theorem", "label": "引理 1.1", "order": 11, "pdf_page": 12, "printed_page": 12, "proof": "证明：由定义 1.1，对任意 $\\varepsilon>0$，存在 $N$，当 $n>N$ 时 $|x_n-a|<\\varepsilon$。取 $K$ 使 $n_K>N$，则当 $k>K$ 时 $|x_{n_k}-a|<\\varepsilon$。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0012-0012"], "statement": "引理 1.1（子列收敛）若 $x_n\\to a$，则对任意子列 $x_{n_k}$，都有 $x_{n_k}\\to a$。", "subkind": "lemma", "title": "子列收敛"}, {"aliases": ["推论 1.1", "推论1.1", "收敛数列的任意子列都有界"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:推论1.1", "kind": "theorem", "label": "推论 1.1", "order": 13, "pdf_page": 14, "printed_page": 14, "proof": "证明：由定理 1.2 可知，收敛数列有界；子列是数列，故其有界。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0014-0014"], "statement": "推论 1.1 收敛数列的任意子列都有界。", "subkind": "corollary", "title": "收敛数列的任意子列都有界"}, {"aliases": ["单调数列", "定义 1.3", "定义1.3"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:定义1.3", "kind": "definition", "label": "定义 1.3", "order": 15, "pdf_page": 16, "printed_page": 16, "proof": "", "schema_version": 1, "section": "§ 1.2 单调数列", "source_chunks": ["demo-p0016-0016"], "statement": "定义 1.3（单调数列）若 $x_1\\le x_2\\le\\cdots$，则称 $\\{x_n\\}$ 单调递增。", "subkind": "definition", "title": "单调数列"}, {"aliases": ["单调有界定理", "定理 1.4", "定理1.4"], "book_id": "demo", "chapter": "第 1 章 数列极限", "formula_review": false, "id": "demo:定理1.4", "kind": "theorem", "label": "定理 1.4", "order": 16, "pdf_page": 17, "printed_page": 17, "proof": "证明：设 $\\{x_n\\}$ 是有界数列且是单调数列。由定义 1.3，它单调递增。由定义 1.2，它有上界。由确界原理，它有上确界 $a$，再按定义 1.1 验证 $x_n\\to a$。", "schema_version": 1, "section": "§ 1.2 单调数列", "source_chunks": ["demo-p0017-0017"], "statement": "定理 1.4（单调有界定理）单调有界数列必有极限。", "subkind": "theorem", "title": "单调有界定理"}, {"aliases": ["Rolle 定理", "§ 2.1 Rolle 定理", "定理 2.1", "定理2.1"], "book_id": "demo", "chapter": "第 2 章 微分中值定理", "formula_review": false, "id": "demo:定理2.1", "kind": "theorem", "label": "定理 2.1", "order": 18, "pdf_page": 19, "printed_page": 19, "proof": "", "schema_version": 1, "section": "§ 2.1 Rolle 定理", "source_chunks": ["demo-p0019-0019"], "statement": "定理 2.1（Rolle 定理）若函数 $f$ 在 $[a,b]$ 上连续、在 $(a,b)$ 内可导，且 $f(a)=f(b)$，则存在 $\\xi\\in(a,b)$ 使 $f'(\\xi)=0$。", "subkind": "theorem", "title": "Rolle 定理"}, {"aliases": ["Rolle 定理的应用", "§ 2.1 Rolle 定理", "定理 2.2", "定理2.2"], "book_id": "demo", "chapter": "第 2 章 微分中值定理", "formula_review": false, "id": "demo:定理2.2", "kind": "theorem", "label": "定理 2.2", "order": 19, "pdf_page": 20, "printed_page": 20, "proof": "证明：由 Rolle 定理可知，存在 $\\xi\\in(a,b)$ 使 $f'(\\xi)=0$。", "schema_version": 1, "section": "§ 2.1 Rolle 定理", "source_chunks": ["demo-p0020-0020"], "statement": "定理 2.2（Rolle 定理的应用）若 $f$ 在 $[a,b]$ 上满足 Rolle 定理的条件，则存在 $\\xi\\in(a,b)$ 使 $f'(\\xi)=0$。", "subkind": "theorem", "title": "Rolle 定理的应用"}, {"aliases": ["§ 2.1 Rolle 定理", "定理 2.3", "定理2.3", "直接推论"], "book_id": "demo", "chapter": "第 2 章 微分中值定理", "formula_review": false, "id": "demo:定理2.3", "kind": "theorem", "label": "定理 2.3", "order": 21, "pdf_page": 22, "printed_page": 22, "proof": "证明：由上述定理可知存在 $\\xi$ 使 $f'(\\xi)=0$，即 $\\xi$ 为驻点。", "schema_version": 1, "section": "§ 2.1 Rolle 定理", "source_chunks": ["demo-p0022-0022"], "statement": "定理 2.3（直接推论）若 $f$ 在 $[a,b]$ 上满足定理 2.2 的条件，则存在驻点。", "subkind": "theorem", "title": "直接推论"}], "schema_version": 1};
+  const DATA = {"edges": [{"confidence": "inferred", "evidence": {"char_end": 185, "char_start": 68, "quote": "由数列极限的定义，对任意 $\\varepsilon>0$，存在 $N_1,N_2$，当 $n>\\max(N_1,N_2)$ 时同时有 $|x_n-a|<\\varepsilon/2$ 与 $|x_n-b|<\\varepsilon/2$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0005-0005", "schema_version": 1, "source": "rule", "to": "demo:定理1.1", "type": "definition_term"}, {"confidence": "explicit", "evidence": {"char_end": 73, "char_start": 16, "quote": "由定义 1.1，取 $\\varepsilon=1$，存在 $N$，当 $n>N$ 时 $|x_n|<|a|+1$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0007-0007", "schema_version": 1, "source": "rule", "to": "demo:定理1.2", "type": "numbered_ref"}, {"confidence": "inferred", "evidence": {"char_end": 120, "char_start": 96, "quote": "再根据有界数列的定义，$\\{x_n\\}$ 有界。"}, "from": "demo:定义1.2", "proof_chunk": "demo-p0007-0007", "schema_version": 1, "source": "rule", "to": "demo:定理1.2", "type": "definition_term"}, {"confidence": "explicit", "evidence": {"char_end": 90, "char_start": 0, "quote": "证明：由定义 1.1，对任意 $\\varepsilon>0$，存在 $N$，当 $n>N$ 时 $L-\\varepsilon<a_n$ 且 $c_n<L+\\varepsilon$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0011-0011", "schema_version": 1, "source": "rule", "to": "demo:定理1.3", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 93, "char_start": 54, "quote": "由确界原理，它有上确界 $a$，再按定义 1.1 验证 $x_n\\to a$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0018-0018", "schema_version": 1, "source": "rule", "to": "demo:定理1.4", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 54, "char_start": 41, "quote": "由定义 1.2，它有上界。"}, "from": "demo:定义1.2", "proof_chunk": "demo-p0018-0018", "schema_version": 1, "source": "rule", "to": "demo:定理1.4", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 41, "char_start": 27, "quote": "由定义 1.3，它单调递增。"}, "from": "demo:定义1.3", "proof_chunk": "demo-p0018-0018", "schema_version": 1, "source": "rule", "to": "demo:定理1.4", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 47, "char_start": 0, "quote": "证明：由 Rolle 定理可知，存在 $\\xi\\in(a,b)$ 使 $f'(\\xi)=0$。"}, "from": "demo:定理2.1", "proof_chunk": "demo-p0021-0021", "schema_version": 1, "source": "rule", "to": "demo:定理2.2", "type": "named_ref"}, {"confidence": "tentative", "evidence": {"char_end": 45, "char_start": 0, "quote": "证明：由上述定理可知存在 $\\xi$ 使 $f'(\\xi)=0$，即 $\\xi$ 为驻点。"}, "from": "demo:定理2.2", "proof_chunk": "demo-p0023-0023", "schema_version": 1, "source": "rule", "to": "demo:定理2.3", "type": "anaphora_ref"}, {"confidence": "explicit", "evidence": {"char_end": 70, "char_start": 0, "quote": "证明：由定义 1.1，对任意 $\\varepsilon>0$，存在 $N$，当 $n>N$ 时 $|x_n-a|<\\varepsilon$。"}, "from": "demo:定义1.1", "proof_chunk": "demo-p0013-0013", "schema_version": 1, "source": "rule", "to": "demo:引理1.1", "type": "numbered_ref"}, {"confidence": "explicit", "evidence": {"char_end": 21, "char_start": 0, "quote": "证明：由定理 1.2 可知，收敛数列有界；"}, "from": "demo:定理1.2", "proof_chunk": "demo-p0015-0015", "schema_version": 1, "source": "rule", "to": "demo:推论1.1", "type": "numbered_ref"}], "metadata": {"book_titles": {"demo": "极小分析讲义"}, "books": ["demo"], "counts": {"attachments": {"attached": 9, "by_status": {"attached": 9}, "non_graph": 1, "total": 9}, "edges": {"by_confidence": {"explicit": 8, "inferred": 2, "tentative": 1}, "by_type": {"anaphora_ref": 1, "definition_term": 2, "named_ref": 1, "numbered_ref": 7}, "total": 11}, "nodes": {"by_kind": {"definition": 3, "theorem": 9}, "total": 12}}, "cycles": [], "default_book": "demo", "isolated_nodes": [], "source_chunks": 23}, "nodes": [{"aliases": ["定义 1.1", "定义1.1", "数列极限"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "", "formula_review": false, "id": "demo:定义1.1", "kind": "definition", "label": "定义 1.1", "order": 0, "pdf_page": 1, "printed_page": 1, "proof": "", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0001-0001"], "statement": "定义 1.1（数列极限）设 $\\{x_n\\}$ 是数列，$a\\in\\mathbb{R}$。若对任意 $\\varepsilon>0$，存在正整数 $N$，当 $n>N$ 时 $|x_n-a|<\\varepsilon$，则称 $\\{x_n\\}$ 收敛于 $a$。", "subkind": "definition", "title": "数列极限"}, {"aliases": ["定义 1.2", "定义1.2", "有界数列"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "", "formula_review": false, "id": "demo:定义1.2", "kind": "definition", "label": "定义 1.2", "order": 1, "pdf_page": 2, "printed_page": 2, "proof": "", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0002-0002"], "statement": "定义 1.2（有界数列）若存在 $M>0$，使得对一切正整数 $n$ 有 $|x_n|\\le M$，则称 $\\{x_n\\}$ 有界。", "subkind": "definition", "title": "有界数列"}, {"aliases": ["定理 1.1", "定理1.1", "极限唯一性"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "极限唯一性", "formula_review": false, "id": "demo:定理1.1", "kind": "theorem", "label": "定理 1.1", "order": 2, "pdf_page": 3, "printed_page": 3, "proof": "证明：设 $x_n\\to a$ 且 $x_n\\to b$。由数列极限的定义，对任意 $\\varepsilon>0$，存在 $N_1,N_2$，当 $n>\\max(N_1,N_2)$ 时同时有 $|x_n-a|<\\varepsilon/2$ 与 $|x_n-b|<\\varepsilon/2$。于是 $|a-b|<\\varepsilon$，故 $a=b$。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0003-0003"], "statement": "定理 1.1（极限唯一性）若数列 $\\{x_n\\}$ 收敛，则它的极限唯一。", "subkind": "theorem", "title": "极限唯一性"}, {"aliases": ["定理 1.2", "定理1.2", "收敛数列有界"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "收敛数列有界", "formula_review": false, "id": "demo:定理1.2", "kind": "theorem", "label": "定理 1.2", "order": 5, "pdf_page": 6, "printed_page": 6, "proof": "证明：设 $x_n\\to a$。由定义 1.1，取 $\\varepsilon=1$，存在 $N$，当 $n>N$ 时 $|x_n|<|a|+1$。再根据有界数列的定义，$\\{x_n\\}$ 有界。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0006-0006"], "statement": "定理 1.2（收敛数列有界）收敛数列必有界。", "subkind": "theorem", "title": "收敛数列有界"}, {"aliases": ["夹逼定理", "定理 1.3", "定理1.3"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "夹逼定理", "formula_review": false, "id": "demo:定理1.3", "kind": "theorem", "label": "定理 1.3", "order": 9, "pdf_page": 10, "printed_page": 10, "proof": "证明：由定义 1.1，对任意 $\\varepsilon>0$，存在 $N$，当 $n>N$ 时 $L-\\varepsilon<a_n$ 且 $c_n<L+\\varepsilon$。由 $a_n\\le b_n\\le c_n$ 得 $L-\\varepsilon<b_n<L+\\varepsilon$，故 $b_n\\to L$。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0010-0010"], "statement": "定理 1.3（夹逼定理）若 $a_n\\le b_n\\le c_n$，且 $a_n\\to L$、$c_n\\to L$，则 $b_n\\to L$。", "subkind": "theorem", "title": "夹逼定理"}, {"aliases": ["子列收敛", "引理 1.1", "引理1.1"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "子列收敛", "formula_review": false, "id": "demo:引理1.1", "kind": "theorem", "label": "引理 1.1", "order": 11, "pdf_page": 12, "printed_page": 12, "proof": "证明：由定义 1.1，对任意 $\\varepsilon>0$，存在 $N$，当 $n>N$ 时 $|x_n-a|<\\varepsilon$。取 $K$ 使 $n_K>N$，则当 $k>K$ 时 $|x_{n_k}-a|<\\varepsilon$。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0012-0012"], "statement": "引理 1.1（子列收敛）若 $x_n\\to a$，则对任意子列 $x_{n_k}$，都有 $x_{n_k}\\to a$。", "subkind": "lemma", "title": "子列收敛"}, {"aliases": ["推论 1.1", "推论1.1", "收敛数列的任意子列都有界"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "收敛数列的任意子列都有界", "formula_review": false, "id": "demo:推论1.1", "kind": "theorem", "label": "推论 1.1", "order": 13, "pdf_page": 14, "printed_page": 14, "proof": "证明：由定理 1.2 可知，收敛数列有界；子列是数列，故其有界。", "schema_version": 1, "section": "§ 1.1 数列极限与有界性", "source_chunks": ["demo-p0014-0014"], "statement": "推论 1.1 收敛数列的任意子列都有界。", "subkind": "corollary", "title": "收敛数列的任意子列都有界"}, {"aliases": ["单调数列", "定义 1.3", "定义1.3"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "", "formula_review": false, "id": "demo:定义1.3", "kind": "definition", "label": "定义 1.3", "order": 15, "pdf_page": 16, "printed_page": 16, "proof": "", "schema_version": 1, "section": "§ 1.2 单调数列", "source_chunks": ["demo-p0016-0016"], "statement": "定义 1.3（单调数列）若 $x_1\\le x_2\\le\\cdots$，则称 $\\{x_n\\}$ 单调递增。", "subkind": "definition", "title": "单调数列"}, {"aliases": ["单调有界定理", "定理 1.4", "定理1.4"], "book_id": "demo", "chapter": "第 1 章 数列极限", "display_name": "单调有界定理", "formula_review": false, "id": "demo:定理1.4", "kind": "theorem", "label": "定理 1.4", "order": 16, "pdf_page": 17, "printed_page": 17, "proof": "证明：设 $\\{x_n\\}$ 是有界数列且是单调数列。由定义 1.3，它单调递增。由定义 1.2，它有上界。由确界原理，它有上确界 $a$，再按定义 1.1 验证 $x_n\\to a$。", "schema_version": 1, "section": "§ 1.2 单调数列", "source_chunks": ["demo-p0017-0017"], "statement": "定理 1.4（单调有界定理）单调有界数列必有极限。", "subkind": "theorem", "title": "单调有界定理"}, {"aliases": ["Rolle 定理", "§ 2.1 Rolle 定理", "定理 2.1", "定理2.1"], "book_id": "demo", "chapter": "第 2 章 微分中值定理", "display_name": "Rolle 定理", "formula_review": false, "id": "demo:定理2.1", "kind": "theorem", "label": "定理 2.1", "order": 18, "pdf_page": 19, "printed_page": 19, "proof": "", "schema_version": 1, "section": "§ 2.1 Rolle 定理", "source_chunks": ["demo-p0019-0019"], "statement": "定理 2.1（Rolle 定理）若函数 $f$ 在 $[a,b]$ 上连续、在 $(a,b)$ 内可导，且 $f(a)=f(b)$，则存在 $\\xi\\in(a,b)$ 使 $f'(\\xi)=0$。", "subkind": "theorem", "title": "Rolle 定理"}, {"aliases": ["Rolle 定理的应用", "§ 2.1 Rolle 定理", "定理 2.2", "定理2.2"], "book_id": "demo", "chapter": "第 2 章 微分中值定理", "display_name": "Rolle 定理的应用", "formula_review": false, "id": "demo:定理2.2", "kind": "theorem", "label": "定理 2.2", "order": 19, "pdf_page": 20, "printed_page": 20, "proof": "证明：由 Rolle 定理可知，存在 $\\xi\\in(a,b)$ 使 $f'(\\xi)=0$。", "schema_version": 1, "section": "§ 2.1 Rolle 定理", "source_chunks": ["demo-p0020-0020"], "statement": "定理 2.2（Rolle 定理的应用）若 $f$ 在 $[a,b]$ 上满足 Rolle 定理的条件，则存在 $\\xi\\in(a,b)$ 使 $f'(\\xi)=0$。", "subkind": "theorem", "title": "Rolle 定理的应用"}, {"aliases": ["§ 2.1 Rolle 定理", "定理 2.3", "定理2.3", "直接推论"], "book_id": "demo", "chapter": "第 2 章 微分中值定理", "display_name": "直接推论", "formula_review": false, "id": "demo:定理2.3", "kind": "theorem", "label": "定理 2.3", "order": 21, "pdf_page": 22, "printed_page": 22, "proof": "证明：由上述定理可知存在 $\\xi$ 使 $f'(\\xi)=0$，即 $\\xi$ 为驻点。", "schema_version": 1, "section": "§ 2.1 Rolle 定理", "source_chunks": ["demo-p0022-0022"], "statement": "定理 2.3（直接推论）若 $f$ 在 $[a,b]$ 上满足定理 2.2 的条件，则存在驻点。", "subkind": "theorem", "title": "直接推论"}], "schema_version": 1};
   const meta = DATA.metadata || {};
   const rawNodes = DATA.nodes || [];
   const nodeById = new Map(rawNodes.map(n => [n.id, n]));
@@ -4617,9 +4617,10 @@ window.MathJax = {
   }
   function nodeLabel(n, maxLength) {
     if (!n) return "";
-    let label = n.label && !/^(定义|定理|引理|推论|命题)$/.test(n.label)
-      ? n.label
-      : (n.title || n.label || n.id);
+    let label = n.display_name
+      || (n.label && !/^(定义|定理|引理|推论|命题)$/.test(n.label)
+        ? n.label
+        : (n.title || n.label || n.id));
     if (maxLength && label.length > maxLength) {
       label = label.slice(0, maxLength) + "…";
     }
@@ -4629,7 +4630,9 @@ window.MathJax = {
   function shortNodeName(n, maxLength) {
     if (!n) return "";
     let name;
-    if (n.label && /\d/.test(n.label)) {
+    if (n.display_name) {
+      name = n.display_name;
+    } else if (n.label && /\d/.test(n.label)) {
       name = n.label;
     } else if (n.title && n.title.length <= 32 && !n.title.includes("$")) {
       name = n.title;
@@ -4640,6 +4643,18 @@ window.MathJax = {
     if (maxLength && name.length > maxLength) {
       name = name.slice(0, maxLength) + "…";
     }
+    return name;
+  }
+
+  function graphLabel(n) {
+    let name = shortNodeName(n);
+    // Keep the disambiguating number but as a compact suffix.
+    const match = name.match(/（([^）]*)）$/);
+    if (match) {
+      const number = match[1].replace(/^(定理|推论|引理|命题|定义)\s*/, "");
+      name = name.replace(/（[^）]*）$/, "") + " · " + number;
+    }
+    if (name.length > 18) name = name.slice(0, 18) + "…";
     return name;
   }
   function edgeGroup(type) {
@@ -4669,7 +4684,7 @@ window.MathJax = {
       return {
         data: {
           id: n.id,
-          label: shortNodeName(n, 22),
+          label: graphLabel(n),
           kind: n.kind,
           subkind: n.subkind,
           book: n.book_id,
@@ -4707,7 +4722,7 @@ window.MathJax = {
       "text-halign": "center",
       "text-margin-y": 5,
       "text-wrap": "wrap",
-      "text-max-width": "132px",
+      "text-max-width": "118px",
       "text-background-color": "#F7F8F6",
       "text-background-opacity": 0.88,
       "text-background-padding": 2,
@@ -4795,7 +4810,7 @@ window.MathJax = {
   if (meta.structure_only) {
     structureNotice.hidden = false;
     structureNotice.textContent = meta.notice
-      || "公开结构版：仅展示章节、编号、页码与依赖边；教材原文未上传。";
+      || "公开结构版：仅展示章节、定理名称、编号、页码与依赖边；教材原文未上传。";
   }
 
   const bookCounts = new Map();
@@ -4883,7 +4898,7 @@ window.MathJax = {
     counts.textContent = visibleNodeCount + " 个节点 · " + visibleEdgeCount + " 条依赖";
     const cycleCount = (meta.cycles || []).length;
     if (meta.structure_only) {
-      ruleNote.textContent = "结构版：保留章节、编号、页码与依赖边；原文未公开";
+      ruleNote.textContent = "结构版：保留定理名称、章节、编号、页码与依赖边；原文未公开";
     } else {
       ruleNote.textContent = cycleCount
         ? "每条自动边都有原文证据 · " + cycleCount + " 个可疑环"
@@ -5038,7 +5053,7 @@ window.MathJax = {
           name: "concentric",
           concentric: node => node.connectedEdges().filter(edge => !edge.hasClass("filtered")).length,
           levelWidth: () => 3,
-          minNodeSpacing: 34,
+          minNodeSpacing: 46,
         },
         common
       );
@@ -5140,12 +5155,13 @@ window.MathJax = {
     detail.innerHTML = "";
     const head = el("div", "detail-head");
     head.append(el("span", "kind " + (node.subkind || node.kind), displayKind(node)));
-    const heading = node.title && node.title.length <= 32 && !node.title.includes("$")
-      ? node.title
-      : shortNodeName(node, 40);
+    const heading = node.display_name
+      || (node.title && node.title.length <= 32 && !node.title.includes("$")
+        ? node.title
+        : shortNodeName(node, 40));
     head.append(el("h2", "node-title", heading));
     detail.append(head);
-    detail.append(el("div", "meta", [bookName(node.book_id), node.chapter, node.section, pageText(node)].filter(Boolean).join("  ·  ")));
+    detail.append(el("div", "meta", [bookName(node.book_id), node.chapter, node.section, node.label, pageText(node)].filter(Boolean).join("  ·  ")));
     detail.append(el("div", "node-id", node.id));
     if (meta.structure_only) {
       detail.append(el("div", "section-label", "原文"));
@@ -5177,7 +5193,7 @@ window.MathJax = {
       "div",
       "footnote",
       meta.structure_only
-        ? "公开结构版只保留章节、编号、页码与依赖边；教材原文、证明和证据引用未上传。"
+        ? "公开结构版只保留定理名称、章节、编号、页码与依赖边；教材原文、证明和证据引用未上传。"
         : "Markdown 与 LaTeX 在浏览器内渲染（MathJax SVG，离线）；自动边必须携带证明原文。"
     ));
   }
@@ -5377,7 +5393,13 @@ window.MathJax = {
       return;
     }
     const matches = rawNodes.filter(node => {
-      const haystack = [node.label, node.title, node.id, (node.aliases || []).join(" ")].join(" ").toLowerCase();
+      const haystack = [
+        node.label,
+        node.title,
+        node.display_name,
+        node.id,
+        (node.aliases || []).join(" "),
+      ].join(" ").toLowerCase();
       return haystack.includes(query);
     }).slice(0, 8);
     if (!matches.length) {
@@ -5388,13 +5410,7 @@ window.MathJax = {
       matches.forEach(node => {
         const button = el("button", "search-result");
         button.type = "button";
-        const extra = node.title
-          && node.title.length <= 24
-          && !node.title.includes("$")
-          && node.title !== node.label
-          ? " · " + node.title
-          : "";
-        button.append(document.createTextNode(shortNodeName(node, 40) + extra));
+        button.append(document.createTextNode(shortNodeName(node, 40)));
         button.append(el("small", null, node.id));
         button.addEventListener("click", () => {
           selectNode(node.id);

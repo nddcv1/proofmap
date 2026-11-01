@@ -20,6 +20,7 @@ from proofmap.extract.numbered import extract_numbered_edges
 from proofmap.graph import build_graph, dedupe_edges
 from proofmap.io import write_json, write_jsonl
 from proofmap.model import Edge
+from proofmap.names import apply_display_names
 from proofmap.resolve import NodeIndex
 
 
@@ -29,6 +30,7 @@ def build_all(
     books: list[str] | None = None,
     include_ambiguous: bool = False,
     corrections_path: str | Path | None = None,
+    names_path: str | Path | None = None,
 ) -> dict[str, Any]:
     chunks = load_chunks(chunks_path)
     if books:
@@ -38,6 +40,9 @@ def build_all(
     nodes, node_issues = extract_nodes(chunks)
     corrections = load_corrections(corrections_path)
     apply_aliases(nodes, corrections)
+    file_names = load_corrections(names_path).get("names") or {}
+    name_overrides = {**file_names, **(corrections.get("names") or {})}
+    apply_display_names(nodes, name_overrides)
 
     attachments = attach_proofs(chunks, nodes)
     attachments = apply_attachment_corrections(attachments, corrections, nodes)

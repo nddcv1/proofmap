@@ -4,7 +4,7 @@
 
 [在线结构版](https://nddcv1.github.io/proofmap/) · [证据版合成 demo](https://nddcv1.github.io/proofmap/demo.html) · [设计文档](docs/superpowers/specs/2026-11-01-proofmap-design.md)
 
-> **在线主页是完整结构版**：覆盖 29 章、545 个节点，只保留章节、编号、页码和依赖边，不含教材原文。带原文证据的交互样例是 [合成 demo](https://nddcv1.github.io/proofmap/demo.html)（两章合成数据）。完整的教材原文图只能本地构建，避免公开上传版权内容和私人笔记。
+> **在线主页是完整结构版**：只覆盖数学分析上/下，共 17 章、357 个节点；保留章节、定理名称、编号、页码和依赖边，不含教材原文。高数 C 习题课讲义、线性代数、数学分析脉络已从图中移除。带原文证据的交互样例是 [合成 demo](https://nddcv1.github.io/proofmap/demo.html)（两章合成数据）。完整的教材原文图只能本地构建，避免公开上传版权内容和私人笔记。
 
 ![ProofMap 结构版](docs/screenshot.png)
 
@@ -55,17 +55,17 @@ proofmap render --build build/demo --out demo.html
 如果你已经有 math-kb 的教材切块 `chunks.jsonl`：
 
 ```bash
-uv run proofmap build --chunks <path-to-chunks.jsonl> --out build/mathkb
-uv run proofmap audit --build build/mathkb
+uv run proofmap build --chunks <path-to-chunks.jsonl> --out build/mathanalysis --book shufeng,shuxia
+uv run proofmap audit --build build/mathanalysis
 # 本地完整证据版
-uv run proofmap render --build build/mathkb --out build/mathkb/proofmap.html
+uv run proofmap render --build build/mathanalysis --out build/mathanalysis/proofmap.html
 # 不含教材原文的公开结构版
-uv run proofmap render --build build/mathkb --out docs/index.html --structure-only
+uv run proofmap render --build build/mathanalysis --out docs/index.html --structure-only
 ```
 
-例如本地 math-kb 的产物在 `D:/zzt/math-kb/data/chunks.jsonl`，把上面的占位路径替换掉即可。`--structure-only` 会剥离 `statement`、`proof`、别名、`source_chunks` 和证据引用，只保留结构信息。
+例如本地 math-kb 的产物在 `D:/zzt/math-kb/data/chunks.jsonl`，把上面的占位路径替换掉即可。`--book shufeng,shuxia` 只保留数分上/下册；另外三本书不进入图，但 math-kb 原始数据不会被删除。`--structure-only` 会剥离 `statement`、`proof`、别名、`source_chunks` 和证据引用，只保留结构信息。
 
-`build/mathkb/` 里会有：
+`build/mathanalysis/` 里会有：
 
 - `nodes.jsonl` / `attachments.jsonl` / `edges.jsonl` / `graph.json`
 - `attachment_audit.md`：归属歧义、未归属、被 detach 的证明
@@ -78,12 +78,13 @@ uv run proofmap render --build build/mathkb --out docs/index.html --structure-on
 
 - 左右两侧分别是过滤器和节点详情；中间是按书/章过滤的依赖图。
 - 实线=定理依赖，虚线=定义概念，点线=指代引用，粗红线=人工确认。
-- 结构版保留章节、编号、页码、依赖方向、类型和置信度；默认显示依赖最密的章节，章节下方有“查看全书”入口。
+- 结构版保留章节、定理名称、编号、页码、依赖方向、类型和置信度；默认显示依赖最密的章节，章节下方有“查看全书”入口。
 - 证据版还可以看陈述、归属证明和每条先修边的原文；Markdown 与 LaTeX 在浏览器内用 MathJax SVG 离线渲染。
+- 定理节点优先显示具体名称：教材括注名 → 常用定理名 → 简洁描述名；重名会追加编号。没有正式名称的定理会得到自动描述名。`config/theorem_names.yaml` 已人工校正默认的第九章，其他章节可以继续补；`corrections.yaml` 的 `names` 段优先级更高。
 - 选中节点后可以：
   - 只看先修 / 只看后继；
   - 生成上游拓扑排序的“学习路径”；
-  - 搜索编号、标题或别名。
+  - 搜索名称、编号或 id。
 - 默认隐藏无依赖节点；可以手动切换章节或勾选“显示孤立节点”。
 
 ## 当前状态（2026-11-01）
@@ -92,14 +93,14 @@ uv run proofmap render --build build/mathkb --out docs/index.html --structure-on
 
 - 12 个节点，11 条边，9 个证明全部归属。
 - 8 个手标证明：attachment accuracy 1.000，edge precision 1.000，edge recall 1.000。
-- 54 个自动化测试。
+- 62 个自动化测试。
 
-本地 math-kb 全量基线（5 本书，未提交数据）：
+数学分析子集基线（数分上+下，未提交数据）：
 
-- 覆盖 29 章、545 个节点、151 条边、0 个环。
-- 数学分析上：9 章，143 个节点；数学分析下：8 章，214 个节点；线性代数：9 章，185 个节点；另有两本辅助讲义。
-- 475 个证明：386 已归属，55 歧义，34 未归属。
-- 84 条未解析/歧义引用，全部写入 `edge_audit.md`。
+- 覆盖 17 章、357 个节点、115 条边、0 个环。
+- 数学分析上：9 章，143 个节点；数学分析下：8 章，214 个节点。
+- 316 个证明已归属，37 个歧义，12 个未归属；64 条未解析/歧义引用，全部写入 `edge_audit.md`。
+- 高数 C 习题课讲义、线性代数、数学分析脉络已从 ProofMap 构建中排除（math-kb 源数据未删）。
 
 这些数字是基线，不是“已完成”的声明。真实的 30 个证明黄金集还没标；当前只对 demo 报告指标。
 
@@ -202,6 +203,9 @@ aliases:
     - Rolle 定理
     - 罗尔定理
 
+names:
+  shuxia:定理9.3.2: 比较判别法
+
 edges:
   add:
     - from: shuxia:定义9.2.1
@@ -260,7 +264,8 @@ uv run --extra dev pytest -q
 - v0.1 是纯规则；隐式依赖会漏，LLM 闭集补边在 v0.2。
 - 只收显式 `kind=definition`；正文里的“称…为…”定义还没抽。
 - 不做跨书依赖，例如数分下引用数分上的定理会进未解析清单。
-- 本地全量基线里仍有 55 个歧义、34 个未归属证明；需要看 `attachment_audit.md` 或写 corrections。
+- 数分基线里仍有 37 个歧义、12 个未归属证明；需要看 `attachment_audit.md` 或写 corrections。
+- 没有正式名称的定理会得到自动描述名或“章节主题（编号）”；可以用 `corrections.yaml` 的 `names` 段覆盖。
 - 证据页的陈述、证明和证据引用用 Markdown + MathJax SVG 离线渲染；结构版不含原文；终端 CLI 仍输出纯文本。
 - 30 个真实教材证明的黄金集还没标，因此不对真实数据宣称 precision/recall。
 - 公开结构版不包含教材原文；完整证据只在本地构建或合成 demo 中。

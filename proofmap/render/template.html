@@ -374,9 +374,10 @@ window.MathJax = {
   }
   function nodeLabel(n, maxLength) {
     if (!n) return "";
-    let label = n.label && !/^(定义|定理|引理|推论|命题)$/.test(n.label)
-      ? n.label
-      : (n.title || n.label || n.id);
+    let label = n.display_name
+      || (n.label && !/^(定义|定理|引理|推论|命题)$/.test(n.label)
+        ? n.label
+        : (n.title || n.label || n.id));
     if (maxLength && label.length > maxLength) {
       label = label.slice(0, maxLength) + "…";
     }
@@ -386,7 +387,9 @@ window.MathJax = {
   function shortNodeName(n, maxLength) {
     if (!n) return "";
     let name;
-    if (n.label && /\d/.test(n.label)) {
+    if (n.display_name) {
+      name = n.display_name;
+    } else if (n.label && /\d/.test(n.label)) {
       name = n.label;
     } else if (n.title && n.title.length <= 32 && !n.title.includes("$")) {
       name = n.title;
@@ -397,6 +400,18 @@ window.MathJax = {
     if (maxLength && name.length > maxLength) {
       name = name.slice(0, maxLength) + "…";
     }
+    return name;
+  }
+
+  function graphLabel(n) {
+    let name = shortNodeName(n);
+    // Keep the disambiguating number but as a compact suffix.
+    const match = name.match(/（([^）]*)）$/);
+    if (match) {
+      const number = match[1].replace(/^(定理|推论|引理|命题|定义)\s*/, "");
+      name = name.replace(/（[^）]*）$/, "") + " · " + number;
+    }
+    if (name.length > 18) name = name.slice(0, 18) + "…";
     return name;
   }
   function edgeGroup(type) {
@@ -426,7 +441,7 @@ window.MathJax = {
       return {
         data: {
           id: n.id,
-          label: shortNodeName(n, 22),
+          label: graphLabel(n),
           kind: n.kind,
           subkind: n.subkind,
           book: n.book_id,
@@ -464,7 +479,7 @@ window.MathJax = {
       "text-halign": "center",
       "text-margin-y": 5,
       "text-wrap": "wrap",
-      "text-max-width": "132px",
+      "text-max-width": "118px",
       "text-background-color": "#F7F8F6",
       "text-background-opacity": 0.88,
       "text-background-padding": 2,
@@ -552,7 +567,7 @@ window.MathJax = {
   if (meta.structure_only) {
     structureNotice.hidden = false;
     structureNotice.textContent = meta.notice
-      || "公开结构版：仅展示章节、编号、页码与依赖边；教材原文未上传。";
+      || "公开结构版：仅展示章节、定理名称、编号、页码与依赖边；教材原文未上传。";
   }
 
   const bookCounts = new Map();
@@ -640,7 +655,7 @@ window.MathJax = {
     counts.textContent = visibleNodeCount + " 个节点 · " + visibleEdgeCount + " 条依赖";
     const cycleCount = (meta.cycles || []).length;
     if (meta.structure_only) {
-      ruleNote.textContent = "结构版：保留章节、编号、页码与依赖边；原文未公开";
+      ruleNote.textContent = "结构版：保留定理名称、章节、编号、页码与依赖边；原文未公开";
     } else {
       ruleNote.textContent = cycleCount
         ? "每条自动边都有原文证据 · " + cycleCount + " 个可疑环"
@@ -795,7 +810,7 @@ window.MathJax = {
           name: "concentric",
           concentric: node => node.connectedEdges().filter(edge => !edge.hasClass("filtered")).length,
           levelWidth: () => 3,
-          minNodeSpacing: 34,
+          minNodeSpacing: 46,
         },
         common
       );
@@ -897,12 +912,13 @@ window.MathJax = {
     detail.innerHTML = "";
     const head = el("div", "detail-head");
     head.append(el("span", "kind " + (node.subkind || node.kind), displayKind(node)));
-    const heading = node.title && node.title.length <= 32 && !node.title.includes("$")
-      ? node.title
-      : shortNodeName(node, 40);
+    const heading = node.display_name
+      || (node.title && node.title.length <= 32 && !node.title.includes("$")
+        ? node.title
+        : shortNodeName(node, 40));
     head.append(el("h2", "node-title", heading));
     detail.append(head);
-    detail.append(el("div", "meta", [bookName(node.book_id), node.chapter, node.section, pageText(node)].filter(Boolean).join("  ·  ")));
+    detail.append(el("div", "meta", [bookName(node.book_id), node.chapter, node.section, node.label, pageText(node)].filter(Boolean).join("  ·  ")));
     detail.append(el("div", "node-id", node.id));
     if (meta.structure_only) {
       detail.append(el("div", "section-label", "原文"));
@@ -934,7 +950,7 @@ window.MathJax = {
       "div",
       "footnote",
       meta.structure_only
-        ? "公开结构版只保留章节、编号、页码与依赖边；教材原文、证明和证据引用未上传。"
+        ? "公开结构版只保留定理名称、章节、编号、页码与依赖边；教材原文、证明和证据引用未上传。"
         : "Markdown 与 LaTeX 在浏览器内渲染（MathJax SVG，离线）；自动边必须携带证明原文。"
     ));
   }
@@ -1134,7 +1150,13 @@ window.MathJax = {
       return;
     }
     const matches = rawNodes.filter(node => {
-      const haystack = [node.label, node.title, node.id, (node.aliases || []).join(" ")].join(" ").toLowerCase();
+      const haystack = [
+        node.label,
+        node.title,
+        node.display_name,
+        node.id,
+        (node.aliases || []).join(" "),
+      ].join(" ").toLowerCase();
       return haystack.includes(query);
     }).slice(0, 8);
     if (!matches.length) {
@@ -1145,13 +1167,7 @@ window.MathJax = {
       matches.forEach(node => {
         const button = el("button", "search-result");
         button.type = "button";
-        const extra = node.title
-          && node.title.length <= 24
-          && !node.title.includes("$")
-          && node.title !== node.label
-          ? " · " + node.title
-          : "";
-        button.append(document.createTextNode(shortNodeName(node, 40) + extra));
+        button.append(document.createTextNode(shortNodeName(node, 40)));
         button.append(el("small", null, node.id));
         button.addEventListener("click", () => {
           selectNode(node.id);

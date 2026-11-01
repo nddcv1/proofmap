@@ -5,11 +5,14 @@ from typing import Any
 NODE_TEXT_PLACEHOLDER = "公开结构版不包含教材原文。"
 EDGE_TEXT_PLACEHOLDER = "公开结构版不包含原文证据。"
 STRUCTURE_NOTICE = (
-    "公开结构版：仅展示章节、编号、页码与依赖边；教材原文未上传。"
+    "公开结构版：仅展示章节、定理名称、编号、页码与依赖边；教材原文未上传。"
 )
 
 
 def public_label(node: dict[str, Any]) -> str:
+    display_name = str(node.get("display_name", "")).strip()
+    if display_name and len(display_name) <= 48 and "$" not in display_name:
+        return display_name
     label = str(node.get("label", "")).strip()
     if any(character.isdigit() for character in label):
         return label
@@ -29,6 +32,7 @@ def redact_graph(graph: dict[str, Any]) -> dict[str, Any]:
                 "subkind": node.get("subkind", ""),
                 "label": label,
                 "title": label,
+                "display_name": label,
                 "aliases": [label],
                 "book_id": node.get("book_id", ""),
                 "chapter": node.get("chapter", ""),

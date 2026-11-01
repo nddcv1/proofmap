@@ -40,7 +40,7 @@ def test_render_structure_only_redacts_text(tmp_path: Path):
     text = html.read_text(encoding="utf-8")
     assert "公开结构版" in text
     assert "由定义 1.1" not in text
-    assert "定理 1.1" in text
+    assert "极限唯一性" in text
 
 
 def test_build_missing_chunks_returns_1(tmp_path: Path, capsys):

@@ -102,3 +102,11 @@ def test_generic_labels_get_unique_id_suffix():
     labels = [node["label"] for node in redacted["nodes"]]
     assert labels == ["定理 1.1", "定义 · 002"]
     assert len(set(labels)) == len(labels)
+
+
+def test_public_label_prefers_short_display_name():
+    graph = sample_graph()
+    graph["nodes"][0]["display_name"] = "极限唯一性"
+    redacted = redact_graph(graph)
+    assert redacted["nodes"][0]["label"] == "极限唯一性"
+    assert redacted["nodes"][0]["display_name"] == "极限唯一性"

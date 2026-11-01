@@ -42,6 +42,7 @@ class Node:
     pdf_page: int
     printed_page: int
     statement: str
+    display_name: str = ""
     source_chunks: list[str] = field(default_factory=list)
     proof: str = ""
     formula_review: bool = False
