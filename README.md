@@ -46,13 +46,15 @@ proofmap render --build build/demo --out demo.html
 
 ## 配合 math-kb 使用
 
-如果你已经有 [math-kb](D:/zzt/math-kb) 的教材切块：
+如果你已经有 math-kb 的教材切块 `chunks.jsonl`：
 
 ```bash
-uv run proofmap build --chunks D:/zzt/math-kb/data/chunks.jsonl --out build/mathkb
+uv run proofmap build --chunks <path-to-chunks.jsonl> --out build/mathkb
 uv run proofmap audit --build build/mathkb
 uv run proofmap render --build build/mathkb --out build/mathkb/proofmap.html
 ```
+
+例如本地 math-kb 的产物在 `D:/zzt/math-kb/data/chunks.jsonl`，把上面的占位路径替换掉即可。
 
 `build/mathkb/` 里会有：
 

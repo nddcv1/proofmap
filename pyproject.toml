@@ -18,6 +18,7 @@ dev = ["pytest>=8.0"]
 
 [project.urls]
 Homepage = "https://github.com/nddcv1/proofmap"
+Demo = "https://nddcv1.github.io/proofmap/"
 Repository = "https://github.com/nddcv1/proofmap"
 
 [project.scripts]
