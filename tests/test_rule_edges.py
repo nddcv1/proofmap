@@ -61,6 +61,30 @@ def test_named_alias_produces_edge_and_generic_alias_is_ignored():
     assert [e.from_id for e in edges] == ["b:定理1.1"]
 
 
+def test_definition_alias_is_not_a_named_theorem_reference():
+    definition = Node(
+        id="b:定义1.1",
+        kind="definition",
+        subkind="definition",
+        label="定义 1.1",
+        title="数列极限",
+        aliases=["定义 1.1", "数列极限"],
+        book_id="b",
+        chapter="第1章",
+        section="§1",
+        pdf_page=1,
+        printed_page=1,
+        statement="",
+        source_chunks=[],
+    )
+    target = node("b:定理1.2", "定理 1.2")
+    index = NodeIndex([definition, target])
+    edges, _ = extract_named_edges(
+        "p1", "由数列极限的定义可知。", "b:定理1.2", index, False
+    )
+    assert edges == []
+
+
 def test_anaphora_resolves_to_preceding_tentative_edge():
     source = node("b:定理1.1", "定理 1.1", source_chunks=["c1"])
     target = node("b:定理1.2", "定理 1.2", source_chunks=["c2"])

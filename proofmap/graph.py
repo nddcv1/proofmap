@@ -6,6 +6,38 @@ from typing import Any
 from proofmap.model import Edge, Node
 
 STRICT_EDGE_TYPES = {"numbered_ref", "named_ref", "anaphora_ref", "llm", "manual"}
+_TYPE_PRIORITY = {
+    "manual": 60,
+    "numbered_ref": 50,
+    "named_ref": 40,
+    "llm": 30,
+    "anaphora_ref": 20,
+    "definition_term": 10,
+}
+_CONFIDENCE_PRIORITY = {
+    "confirmed": 4,
+    "explicit": 3,
+    "inferred": 2,
+    "tentative": 1,
+}
+
+
+def dedupe_edges(edges: list[Edge]) -> list[Edge]:
+    best: dict[tuple[str, str], tuple[tuple[int, int], Edge]] = {}
+    for edge in edges:
+        key = (edge.from_id, edge.to_id)
+        rank = (
+            _TYPE_PRIORITY.get(edge.type, 0),
+            _CONFIDENCE_PRIORITY.get(edge.confidence, 0),
+        )
+        if key not in best or rank > best[key][0]:
+            best[key] = (rank, edge)
+    return [
+        edge
+        for _, edge in sorted(
+            best.values(), key=lambda item: (item[1].to_id, item[1].from_id, item[1].type)
+        )
+    ]
 
 
 def _edge_parts(edge: Edge | dict[str, Any]) -> tuple[str, str, str, str]:

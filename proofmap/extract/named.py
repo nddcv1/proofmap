@@ -67,6 +67,8 @@ def extract_named_edges(
                 node_id
                 for node_id in index.resolve_alias(target.book_id, target.chapter, alias)
                 if node_id != target_id
+                and index.by_id.get(node_id) is not None
+                and index.by_id[node_id].kind == "theorem"
             ]
             if not ids:
                 continue

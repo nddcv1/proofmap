@@ -55,11 +55,12 @@ def test_unresolved_when_no_candidate():
     assert attachments[0].target_id == ""
 
 
-def test_close_scores_are_ambiguous():
+def test_close_scores_are_ambiguous_when_no_candidate_is_adjacent():
     chunks = [
         chunk("c1", "theorem", "定理 1.1 甲。"),
         chunk("c2", "theorem", "定理 1.2 乙。"),
-        chunk("c3", "proof", "证明: 由甲可知。"),
+        chunk("c3", "text", "分析：略。"),
+        chunk("c4", "proof", "证明: 由甲可知。"),
     ]
     nodes, _ = extract_nodes(chunks)
     attachments = attach_proofs(chunks, nodes)
@@ -95,6 +96,18 @@ def test_example_statement_containing_prove_word_is_not_inline_penalty():
     attachments = attach_proofs(chunks, nodes)
     assert attachments[0].status == "attached"
     assert attachments[0].non_graph is True
+
+
+def test_named_dependency_mention_does_not_make_nearby_theorem_ambiguous():
+    chunks = [
+        chunk("c1", "theorem", "定理 1.1（Rolle 定理）若 A 则 B。"),
+        chunk("c2", "theorem", "定理 1.2（应用）若 A 则 C。"),
+        chunk("c3", "proof", "证明：由 Rolle 定理可知 C。"),
+    ]
+    nodes, _ = extract_nodes(chunks)
+    attachments = attach_proofs(chunks, nodes)
+    assert attachments[0].status == "attached"
+    assert attachments[0].target_id == "demo:定理1.2"
 
 
 def test_apply_attachments_is_idempotent():

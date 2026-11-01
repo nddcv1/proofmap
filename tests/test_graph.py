@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from proofmap.audit import write_audits
-from proofmap.graph import build_graph, find_cycles, isolated_nodes
+from proofmap.graph import build_graph, dedupe_edges, find_cycles, isolated_nodes
 from proofmap.model import Edge, Evidence, Node, ProofAttachment
 
 
@@ -50,6 +50,13 @@ def test_definition_edges_do_not_form_strict_cycles():
 def test_isolated_nodes():
     nodes = [node("a", "c1"), node("b", "c2"), node("c", "c3")]
     assert isolated_nodes(nodes, [edge("a", "b")]) == ["c"]
+
+
+def test_dedupe_prefers_stronger_evidence():
+    edges = [edge("a", "b", "named_ref"), edge("a", "b", "numbered_ref")]
+    result = dedupe_edges(edges)
+    assert len(result) == 1
+    assert result[0].type == "numbered_ref"
 
 
 def test_build_graph_sorts_and_counts():

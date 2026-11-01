@@ -151,7 +151,12 @@ def attach_proofs(
         second = candidates[1] if len(candidates) > 1 else None
         margin = top.score - second.score if second else top.score
 
-        if top.score >= 0.55 and margin >= 0.15 and not top.degraded:
+        nearest_exception = top.distance == 1 and top.score >= 0.55
+        if (
+            top.score >= 0.55
+            and (margin >= 0.15 or nearest_exception)
+            and not top.degraded
+        ):
             status = "attached"
         else:
             status = "ambiguous"
