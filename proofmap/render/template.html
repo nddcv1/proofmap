@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+:root{
+  --paper:#F1F3F2;
+  --paper-2:#E9EDEB;
+  --canvas:#F7F8F6;
+  --ink:#16241F;
+  --ink-soft:#4E5F58;
+  --muted:#7A8A83;
+  --line:#CBD5CF;
+  --line-strong:#AEBDB5;
+  --seal:#B23A2E;
+  --seal-soft:#F3DDD9;
+  --teal:#2E6B62;
+  --ochre:#9A6B2F;
+  --white:#FFFFFF;
+  --serif:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",SimSun,serif;
+  --sans:"Microsoft YaHei UI","PingFang SC","Noto Sans CJK SC",system-ui,sans-serif;
+  --mono:"Cascadia Mono",Consolas,"SFMono-Regular",monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:13px;display:flex;flex-direction:column;overflow:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer}
+header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--paper);position:relative;z-index:5}
+.brand{display:flex;align-items:center;gap:12px;min-width:224px}
+.seal{width:30px;height:30px;display:grid;place-items:center;background:var(--seal);color:#fff;font-family:var(--serif);font-size:18px;font-weight:700;border-radius:2px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);flex:0 0 auto}
+.wordmark{font-family:var(--serif);font-size:22px;line-height:1;color:var(--ink);letter-spacing:.01em}
+.subtitle{font-size:12px;color:var(--muted);margin-top:5px}
+.search-wrap{position:relative;flex:1;max-width:480px}
+.search-input{width:100%;height:36px;border:1px solid var(--line-strong);background:#fff;padding:0 12px;font-family:var(--sans);font-size:13px;color:var(--ink);border-radius:2px;outline:none}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(22,36,31,.08)}
+.search-results{position:absolute;top:40px;left:0;right:0;background:#fff;border:1px solid var(--line-strong);max-height:320px;overflow:auto;z-index:20;display:none}
+.search-results.open{display:block}
+.search-result{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:#fff;padding:9px 12px;font-family:var(--sans);font-size:13px;color:var(--ink);cursor:pointer}
+.search-result:hover,.search-result:focus-visible{background:var(--paper-2);outline:none}
+.search-result small{display:block;color:var(--muted);font-family:var(--mono);font-size:10px;margin-top:3px}
+.header-meta{margin-left:auto;text-align:right;font-size:12px;color:var(--ink-soft);line-height:1.5;white-space:nowrap}
+.header-meta strong{display:block;font-family:var(--mono);font-weight:500;font-size:12px;color:var(--ink)}
+.rule-note{color:var(--muted);font-size:11px}
+.workspace{flex:1;display:grid;grid-template-columns:256px minmax(0,1fr) 348px;min-height:0}
+.sidebar{border-right:1px solid var(--line);padding:18px 16px 24px;overflow:auto;background:var(--paper)}
+.side-section{margin-bottom:22px}
+.side-section h2{font-size:12px;font-weight:600;color:var(--ink-soft);margin:0 0 8px;letter-spacing:.02em}
+.select{width:100%;height:34px;border:1px solid var(--line-strong);background:#fff;padding:0 8px;font-family:var(--sans);font-size:12px;color:var(--ink);border-radius:2px}
+.chips{display:grid;gap:6px}
+.chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;padding:7px 8px;font-size:12px;color:var(--ink-soft);cursor:pointer;border-radius:2px}
+.chip input{accent-color:var(--seal);margin:0}
+.chip:has(input:checked){border-color:var(--line-strong);color:var(--ink)}
+.chip:has(input:disabled){opacity:.55;cursor:not-allowed}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.btn{height:34px;border:1px solid var(--line-strong);background:#fff;color:var(--ink);font-family:var(--sans);font-size:12px;cursor:pointer;border-radius:2px;padding:0 10px}
+.btn:hover{border-color:var(--ink)}
+.btn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn:focus-visible,.select:focus-visible,.chip:focus-within{outline:2px solid var(--seal);outline-offset:1px}
+.btn.wide{grid-column:1 / -1}
+.sidebar-note{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;line-height:1.7;color:var(--muted)}
+.sidebar-note code{font-family:var(--mono);font-size:10px}
+.graph-wrap{position:relative;min-width:0;min-height:0;background-color:var(--canvas);background-image:linear-gradient(rgba(22,36,31,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(22,36,31,.035) 1px,transparent 1px);background-size:28px 28px;overflow:hidden}
+#cy{position:absolute;inset:0}
+.canvas-empty{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);color:var(--muted);font-size:18px;pointer-events:none}
+.legend{position:absolute;left:16px;bottom:16px;display:flex;flex-wrap:wrap;gap:10px 14px;padding:8px 10px;background:rgba(247,248,246,.94);border:1px solid var(--line);font-size:11px;color:var(--ink-soft);max-width:calc(100% - 32px)}
+.legend span{display:flex;align-items:center;gap:6px}
+.swatch{display:inline-block;width:22px;height:0;border-top:2px solid var(--ink-soft)}
+.swatch.dashed{border-top-style:dashed;border-color:var(--teal)}
+.swatch.dotted{border-top-style:dotted;border-color:var(--ochre)}
+.swatch.manual{border-top-width:3px;border-color:var(--seal)}
+.toast{position:absolute;left:50%;bottom:24px;transform:translate(-50%,8px);background:var(--ink);color:var(--paper);padding:9px 14px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;max-width:80%;text-align:center;z-index:10}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.detail{border-left:1px solid var(--line);background:var(--paper-2);overflow:auto;padding:22px 20px 40px}
+.detail-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.kind{flex:0 0 auto;font-size:11px;padding:3px 7px;border:1px solid currentColor;color:var(--ink-soft);border-radius:2px;margin-top:5px}
+.kind.definition{color:var(--teal)}
+.kind.lemma,.kind.corollary{color:var(--ochre)}
+.kind.theorem{color:var(--ink)}
+.node-title{font-family:var(--serif);font-size:22px;line-height:1.35;font-weight:700;margin:0;color:var(--ink)}
+.meta{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.7;margin:6px 0 2px;word-break:break-word}
+.node-id{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:18px;word-break:break-all}
+.section-label{font-size:11px;font-weight:600;color:var(--ink-soft);margin:20px 0 8px;letter-spacing:.02em}
+.statement,.proof{font-family:var(--serif);font-size:14px;line-height:1.95;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.proof{background:#fff;border:1px solid var(--line);padding:12px;max-height:280px;overflow:auto}
+.muted{color:var(--muted);font-size:12px;line-height:1.7}
+.footnote{margin-top:18px;font-size:10px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
+.edge-list{display:grid;gap:0}
+.edge-row{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:10px 0 12px;cursor:pointer;color:var(--ink)}
+.edge-row:hover,.edge-row:focus-visible{background:rgba(255,255,255,.55);outline:none}
+.edge-row-head{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+.type-badge{font-size:10px;padding:2px 6px;border:1px solid var(--line-strong);color:var(--ink-soft);border-radius:2px}
+.type-badge.definition_term{color:var(--teal);border-color:var(--teal)}
+.type-badge.manual{color:var(--seal);border-color:var(--seal)}
+.conf{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.edge-title{font-size:13px;line-height:1.5;color:var(--ink)}
+.evidence{margin:6px 0 0;padding:7px 10px;border-left:3px solid var(--seal);background:#fff;font-family:var(--serif);font-size:12px;line-height:1.8;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word}
+.path-section{margin-top:24px;border-top:1px solid var(--line-strong);padding-top:4px}
+.path-list{list-style:none;margin:0;padding:0;counter-reset:step;max-height:280px;overflow:auto}
+.path-list li{counter-increment:step;display:flex;gap:10px;padding:5px 0;font-size:12px;line-height:1.6}
+.path-list li::before{content:counter(step);font-family:var(--mono);font-size:10px;color:var(--seal);border:1px solid var(--seal);width:18px;height:18px;display:grid;place-items:center;flex:0 0 auto;margin-top:2px}
+.path-link{border:0;background:transparent;padding:0;text-align:left;font-size:12px;color:var(--ink);cursor:pointer}
+.path-link:hover{color:var(--seal)}
+.empty{padding:28px 4px;border-top:2px solid var(--seal);margin-top:10px}
+.empty-mark{width:44px;height:44px;background:var(--seal);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-size:26px;font-weight:700;margin-bottom:18px}
+.empty h2{font-family:var(--serif);font-size:20px;margin:0 0 10px}
+.empty p{font-size:13px;line-height:1.8;color:var(--ink-soft);margin:0 0 10px}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+@media (max-width:1080px){.workspace{grid-template-columns:224px minmax(0,1fr) 300px}.header-meta .rule-note{display:none}}
+@media (max-width:860px){
+  html,body{height:auto;overflow:auto}
+  body{display:block}
+  header{height:auto;min-height:64px;flex-wrap:wrap;padding:12px 14px;gap:10px}
+  .brand{min-width:0;flex:1 1 100%}
+  .search-wrap{flex:1 1 100%;max-width:none}
+  .header-meta{display:none}
+  .workspace{display:flex;flex-direction:column;min-height:0}
+  .sidebar{border-right:0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 14px}
+  .side-section{margin:0}
+  .sidebar-note{display:none}
+  .graph-wrap{height:58vh;min-height:380px}
+  .detail{border-left:0;border-top:1px solid var(--line);padding:18px 16px 40px}
+  .legend{left:10px;bottom:10px;font-size:10px;gap:8px}
+  .node-title{font-size:20px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="seal" aria-hidden="true">证</div>
+    <div>
+      <div class="wordmark">ProofMap</div>
+      <div class="subtitle">数学教材先修地图</div>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <input id="search-input" class="search-input" type="search" autocomplete="off" placeholder="搜索定理、定义或编号（按 / 聚焦）" aria-label="搜索节点">
+    <div id="search-results" class="search-results" role="listbox"></div>
+  </div>
+  <div class="header-meta">
+    <strong id="counts">0 个节点 · 0 条依赖</strong>
+    <span id="rule-note" class="rule-note">每条自动边都有原文证据</span>
+  </div>
+</header>
+<main class="workspace">
+  <aside class="sidebar" aria-label="过滤与视图">
+    <section class="side-section">
+      <h2>书目</h2>
+      <select id="book-select" class="select" aria-label="选择书目"></select>
+    </section>
+    <section class="side-section">
+      <h2>章节</h2>
+      <select id="chapter-select" class="select" aria-label="选择章节"></select>
+    </section>
+    <section class="side-section">
+      <h2>显示的依赖</h2>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" data-edge-group="theorem">定理依赖（编号与命名引用）</label>
+        <label class="chip"><input type="checkbox" data-edge-group="concept">定义概念边</label>
+        <label class="chip"><input type="checkbox" data-edge-group="anaphora">指代引用（上述定理等）</label>
+        <label class="chip"><input type="checkbox" data-edge-group="llm" disabled>LLM 推断（v0.2，未启用）</label>
+      </div>
+    </section>
+    <section class="side-section">
+      <h2>视图</h2>
+      <div class="btn-row">
+        <button id="focus-up" class="btn" type="button" data-focus="up" aria-pressed="false">只看先修</button>
+        <button id="focus-down" class="btn" type="button" data-focus="down" aria-pressed="false">只看后继</button>
+        <button id="path-btn" class="btn wide" type="button">生成学习路径</button>
+        <button id="fit-btn" class="btn" type="button">适应画布</button>
+        <button id="reset-btn" class="btn" type="button">重置视图</button>
+      </div>
+    </section>
+    <div class="sidebar-note">
+      边方向：<code>A → B</code> 表示学 B 之前要先会 A。<br>
+      实线=定理依赖，虚线=定义概念，点线=指代。红色=人工确认或可疑环。
+    </div>
+  </aside>
+  <section class="graph-wrap" aria-label="依赖图">
+    <div id="cy"></div>
+    <div id="canvas-empty" class="canvas-empty" hidden>这个数据集没有可显示的节点。</div>
+    <div class="legend" aria-label="图例">
+      <span><i class="swatch"></i>定理依赖</span>
+      <span><i class="swatch dashed"></i>定义概念</span>
+      <span><i class="swatch dotted"></i>指代</span>
+      <span><i class="swatch manual"></i>人工 / 环</span>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </section>
+  <aside id="detail" class="detail" aria-label="节点详情"></aside>
+</main>
+<script>__CYTOSCAPE_JS__</script>
+<script>__DAGRE_JS__</script>
+<script>__CY_DAGRE_JS__</script>
+<script>
+(function(){
+  "use strict";
+  const DATA = __GRAPH_JSON__;
+  const meta = DATA.metadata || {};
+  const rawNodes = DATA.nodes || [];
+  const nodeById = new Map(rawNodes.map(n => [n.id, n]));
+  const rawEdges = (DATA.edges || []).filter(e => nodeById.has(e.from) && nodeById.has(e.to));
+  const edges = rawEdges.map((e, index) => ({...e, _id: "e" + index}));
+  const edgeById = new Map(edges.map(e => [e._id, e]));
+  const incoming = new Map(rawNodes.map(n => [n.id, []]));
+  const outgoing = new Map(rawNodes.map(n => [n.id, []]));
+  edges.forEach(e => { incoming.get(e.to).push(e); outgoing.get(e.from).push(e); });
+
+  const cycleNodes = new Set();
+  const cycleEdgeKeys = new Set();
+  (meta.cycles || []).forEach(cycle => {
+    cycle.forEach(id => cycleNodes.add(id));
+    for (let i = 0; i < cycle.length; i++) {
+      const a = cycle[i];
+      const b = cycle[(i + 1) % cycle.length];
+      cycleEdgeKeys.add(a + "->" + b);
+    }
+  });
+  const isolatedNodes = new Set(meta.isolated_nodes || []);
+  const bookTitles = meta.book_titles || {};
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const KIND_LABEL = {definition: "定义", theorem: "定理", lemma: "引理", corollary: "推论", proposition: "命题"};
+  const TYPE_LABEL = {
+    numbered_ref: "编号引用",
+    named_ref: "命名引用",
+    anaphora_ref: "指代引用",
+    definition_term: "定义概念",
+    llm: "LLM 推断",
+    manual: "人工确认",
+  };
+  const CONF_LABEL = {explicit: "显式", inferred: "推断", tentative: "待确认", confirmed: "已确认"};
+  const state = {
+    book: null,
+    chapter: "all",
+    selected: null,
+    focus: null,
+    path: [],
+    edgeGroups: {theorem: true, concept: true, anaphora: false, llm: false},
+  };
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = text;
+    return node;
+  }
+  function displayKind(n) { return KIND_LABEL[n.subkind] || KIND_LABEL[n.kind] || n.kind || "节点"; }
+  function bookName(id) { return bookTitles[id] || id || "未命名"; }
+  function pageText(n) {
+    const parts = [];
+    if (n.printed_page) parts.push("印刷 p." + n.printed_page);
+    if (n.pdf_page && n.pdf_page !== n.printed_page) parts.push("PDF p." + n.pdf_page);
+    return parts.join(" · ");
+  }
+  function nodeLabel(n) {
+    if (!n) return "";
+    return n.label && !/^(定义|定理|引理|推论|命题)$/.test(n.label)
+      ? n.label
+      : (n.title || n.label || n.id);
+  }
+  function edgeGroup(type) {
+    if (type === "definition_term") return "concept";
+    if (type === "anaphora_ref") return "anaphora";
+    if (type === "llm") return "llm";
+    return "theorem";
+  }
+  function isNodeVisible(n) {
+    return !!n && n.book_id === state.book && (state.chapter === "all" || n.chapter === state.chapter);
+  }
+  function isEdgeVisible(e) {
+    const s = nodeById.get(e.from);
+    const t = nodeById.get(e.to);
+    return isNodeVisible(s) && isNodeVisible(t) && !!state.edgeGroups[edgeGroup(e.type)];
+  }
+  function visibleEdges() { return edges.filter(isEdgeVisible); }
+
+  const elements = [
+    ...rawNodes.map(n => {
+      const classes = [n.kind, n.subkind];
+      if (isolatedNodes.has(n.id)) classes.push("isolated");
+      if (cycleNodes.has(n.id)) classes.push("cycle");
+      return {
+        data: {
+          id: n.id,
+          label: nodeLabel(n),
+          kind: n.kind,
+          subkind: n.subkind,
+          book: n.book_id,
+          chapter: n.chapter,
+          order: n.order || 0,
+        },
+        classes: classes.filter(Boolean).join(" "),
+      };
+    }),
+    ...edges.map(e => {
+      const classes = [e.type, e.confidence];
+      if (cycleEdgeKeys.has(e.from + "->" + e.to)) classes.push("cycle");
+      return {
+        data: {
+          id: e._id,
+          source: e.from,
+          target: e.to,
+          type: e.type,
+          confidence: e.confidence,
+        },
+        classes: classes.filter(Boolean).join(" "),
+      };
+    }),
+  ];
+
+  const styles = [
+    {selector: "node", style: {
+      "background-color": "#16241F",
+      "color": "#16241F",
+      "label": "data(label)",
+      "font-family": "SimSun, serif",
+      "font-size": 12,
+      "font-weight": 600,
+      "text-valign": "bottom",
+      "text-halign": "center",
+      "text-margin-y": 5,
+      "text-wrap": "wrap",
+      "text-max-width": "132px",
+      "text-background-color": "#F7F8F6",
+      "text-background-opacity": 0.88,
+      "text-background-padding": 2,
+      "width": 30,
+      "height": 30,
+      "border-width": 1.5,
+      "border-color": "#F7F8F6",
+      "overlay-opacity": 0,
+    }},
+    {selector: "node.definition", style: {
+      "background-color": "#2E6B62",
+      "shape": "round-rectangle",
+      "width": 31,
+      "height": 27,
+    }},
+    {selector: "node.theorem", style: {"background-color": "#1F352D", "shape": "ellipse", "width": 31, "height": 31}},
+    {selector: "node.lemma", style: {"background-color": "#9A6B2F", "shape": "triangle", "width": 33, "height": 31}},
+    {selector: "node.corollary", style: {"background-color": "#9A6B2F", "shape": "triangle", "width": 31, "height": 29}},
+    {selector: "node.proposition", style: {"background-color": "#6B4E71", "shape": "diamond"}},
+    {selector: "node.isolated", style: {"opacity": 0.42, "border-style": "dashed", "border-color": "#7A8A83"}},
+    {selector: "node.cycle", style: {"border-color": "#B23A2E", "border-width": 2.5}},
+    {selector: "node:selected", style: {"border-color": "#B23A2E", "border-width": 3.5}},
+    {selector: "node.path", style: {"border-color": "#B23A2E", "border-width": 3}},
+    {selector: "edge", style: {
+      "width": 1.25,
+      "line-color": "#5C6B64",
+      "target-arrow-color": "#5C6B64",
+      "target-arrow-shape": "triangle",
+      "arrow-scale": 0.72,
+      "curve-style": "bezier",
+      "line-style": "solid",
+      "opacity": 0.9,
+      "overlay-opacity": 0,
+    }},
+    {selector: "edge.definition_term", style: {"line-color": "#2E6B62", "target-arrow-color": "#2E6B62", "line-style": "dashed"}},
+    {selector: "edge.anaphora_ref", style: {"line-color": "#9A6B2F", "target-arrow-color": "#9A6B2F", "line-style": "dotted", "opacity": 0.6}},
+    {selector: "edge.manual", style: {"width": 2.6, "line-color": "#B23A2E", "target-arrow-color": "#B23A2E"}},
+    {selector: "edge.tentative", style: {"opacity": 0.45}},
+    {selector: "edge.cycle", style: {"line-color": "#B23A2E", "target-arrow-color": "#B23A2E", "width": 2.2}},
+    {selector: "edge:selected", style: {"width": 3.6, "opacity": 1}},
+    {selector: "edge.path", style: {"line-color": "#B23A2E", "target-arrow-color": "#B23A2E", "width": 2.8}},
+    {selector: ".filtered", style: {"display": "none"}},
+    {selector: ".faded", style: {"opacity": 0.12}},
+  ];
+
+  let layoutName = "dagre";
+  if (typeof cytoscapeDagre !== "undefined") {
+    cytoscape.use(cytoscapeDagre);
+  } else {
+    layoutName = "cose";
+  }
+
+  const cy = cytoscape({
+    container: document.getElementById("cy"),
+    elements: elements,
+    style: styles,
+    layout: {name: "preset"},
+    wheelSensitivity: 0.2,
+    minZoom: 0.2,
+    maxZoom: 2.6,
+    boxSelectionEnabled: false,
+    selectionType: "single",
+  });
+
+  const bookSelect = document.getElementById("book-select");
+  const chapterSelect = document.getElementById("chapter-select");
+  const detail = document.getElementById("detail");
+  const counts = document.getElementById("counts");
+  const ruleNote = document.getElementById("rule-note");
+  const searchInput = document.getElementById("search-input");
+  const searchResults = document.getElementById("search-results");
+  const searchWrap = document.querySelector(".search-wrap");
+  const toastEl = document.getElementById("toast");
+  const canvasEmpty = document.getElementById("canvas-empty");
+
+  const books = [...new Set(rawNodes.map(n => n.book_id))];
+  if (books.length) {
+    state.book = books[0];
+    books.forEach(id => bookSelect.append(new Option(bookName(id), id)));
+    bookSelect.value = state.book;
+  }
+
+  function populateChapters(preferred) {
+    chapterSelect.innerHTML = "";
+    const chapters = [...new Set(rawNodes.filter(n => n.book_id === state.book).map(n => n.chapter))];
+    chapterSelect.append(new Option("全部章节", "all"));
+    chapters.forEach(ch => chapterSelect.append(new Option(ch, ch)));
+    const count = rawNodes.filter(n => n.book_id === state.book).length;
+    if (preferred) {
+      state.chapter = preferred;
+    } else {
+      state.chapter = count <= 40 || chapters.length <= 1 ? "all" : (chapters[0] || "all");
+    }
+    chapterSelect.value = state.chapter;
+  }
+
+  function updateCounts() {
+    const visibleNodeCount = cy.nodes().filter(n => !n.hasClass("filtered")).length;
+    const visibleEdgeCount = cy.edges().filter(e => !e.hasClass("filtered")).length;
+    counts.textContent = visibleNodeCount + " 个节点 · " + visibleEdgeCount + " 条依赖";
+    const cycleCount = (meta.cycles || []).length;
+    ruleNote.textContent = cycleCount
+      ? "每条自动边都有原文证据 · " + cycleCount + " 个可疑环"
+      : "每条自动边都有原文证据";
+  }
+
+  function syncSelectionVisibility() {
+    if (!state.selected) return;
+    const node = nodeById.get(state.selected);
+    if (!node || !isNodeVisible(node)) {
+      state.selected = null;
+      state.path = [];
+      cy.$(":selected").unselect();
+      renderEmptyDetail();
+    }
+  }
+
+  function upstreamSet(id) {
+    const set = new Set([id]);
+    const queue = [id];
+    while (queue.length) {
+      const current = queue.shift();
+      (incoming.get(current) || []).forEach(edge => {
+        if (isEdgeVisible(edge) && !set.has(edge.from)) {
+          set.add(edge.from);
+          queue.push(edge.from);
+        }
+      });
+    }
+    return set;
+  }
+
+  function downstreamSet(id) {
+    const set = new Set([id]);
+    const queue = [id];
+    while (queue.length) {
+      const current = queue.shift();
+      (outgoing.get(current) || []).forEach(edge => {
+        if (isEdgeVisible(edge) && !set.has(edge.to)) {
+          set.add(edge.to);
+          queue.push(edge.to);
+        }
+      });
+    }
+    return set;
+  }
+
+  function refreshVisuals() {
+    cy.batch(() => {
+      cy.elements().removeClass("faded path");
+      if (state.focus && state.selected) {
+        const set = state.focus === "up" ? upstreamSet(state.selected) : downstreamSet(state.selected);
+        cy.elements().forEach(element => {
+          const keep = element.isNode()
+            ? set.has(element.id())
+            : (set.has(element.data("source")) && set.has(element.data("target")));
+          if (!keep) element.addClass("faded");
+        });
+      }
+      if (state.path.length) {
+        const pathSet = new Set(state.path);
+        cy.nodes().forEach(element => {
+          if (pathSet.has(element.id())) element.addClass("path");
+        });
+        cy.edges().forEach(element => {
+          if (pathSet.has(element.data("source")) && pathSet.has(element.data("target"))) {
+            element.addClass("path");
+          }
+        });
+      }
+    });
+  }
+
+  function applyFilters() {
+    cy.batch(() => {
+      cy.nodes().forEach(element => {
+        const node = nodeById.get(element.id());
+        element.toggleClass("filtered", !isNodeVisible(node));
+      });
+      cy.edges().forEach(element => {
+        const data = element.data();
+        const source = nodeById.get(data.source);
+        const target = nodeById.get(data.target);
+        const visible = !!source && !!target && isNodeVisible(source) && isNodeVisible(target)
+          && !!state.edgeGroups[edgeGroup(data.type)];
+        element.toggleClass("filtered", !visible);
+      });
+    });
+    syncSelectionVisibility();
+    refreshVisuals();
+    updateCounts();
+  }
+
+  function runLayout(animate) {
+    const visible = cy.nodes().filter(node => !node.hasClass("filtered"));
+    if (!visible.length) return;
+    const common = {
+      padding: 44,
+      fit: true,
+      animate: !!animate && !reducedMotion,
+      animationDuration: 420,
+    };
+    const options = layoutName === "dagre"
+      ? Object.assign({name: "dagre", rankDir: "TB", nodeSep: 42, rankSep: 74, edgeSep: 14}, common)
+      : Object.assign({name: "cose", nodeRepulsion: 9000, idealEdgeLength: 100}, common);
+    cy.layout(options).run();
+  }
+
+  function learningPath(id) {
+    const set = upstreamSet(id);
+    const induced = edges.filter(edge => isEdgeVisible(edge) && set.has(edge.from) && set.has(edge.to));
+    const indegree = new Map([...set].map(nodeId => [nodeId, 0]));
+    const adjacency = new Map([...set].map(nodeId => [nodeId, []]));
+    induced.forEach(edge => {
+      adjacency.get(edge.from).push(edge.to);
+      indegree.set(edge.to, indegree.get(edge.to) + 1);
+    });
+    const byOrder = (a, b) => (nodeById.get(a) && nodeById.get(a).order || 0) - (nodeById.get(b) && nodeById.get(b).order || 0);
+    const ready = [...set].filter(nodeId => indegree.get(nodeId) === 0).sort(byOrder);
+    const ordered = [];
+    while (ready.length) {
+      const current = ready.shift();
+      ordered.push(current);
+      adjacency.get(current).forEach(target => {
+        indegree.set(target, indegree.get(target) - 1);
+        if (indegree.get(target) === 0) {
+          ready.push(target);
+          ready.sort(byOrder);
+        }
+      });
+    }
+    return ordered.length === set.size ? ordered : [...set].sort(byOrder);
+  }
+
+  function edgeList(items, direction) {
+    const wrap = el("div", "edge-list");
+    if (!items.length) {
+      wrap.append(el("div", "muted", "无。"));
+      return wrap;
+    }
+    const sorted = [...items].sort((a, b) => {
+      const left = nodeById.get(direction === "in" ? a.from : a.to);
+      const right = nodeById.get(direction === "in" ? b.from : b.to);
+      return nodeLabel(left).localeCompare(nodeLabel(right), "zh-CN");
+    });
+    sorted.forEach(edge => {
+      const row = el("div", "edge-row");
+      row.tabIndex = 0;
+      row.setAttribute("role", "button");
+      const head = el("div", "edge-row-head");
+      head.append(el("span", "type-badge " + edge.type, TYPE_LABEL[edge.type] || edge.type));
+      head.append(el("span", "conf", CONF_LABEL[edge.confidence] || edge.confidence));
+      row.append(head);
+      const otherId = direction === "in" ? edge.from : edge.to;
+      const other = nodeById.get(otherId);
+      row.append(el("div", "edge-title", other ? nodeLabel(other) + (other.title ? " · " + other.title : "") : otherId));
+      if (direction === "in" && edge.evidence && edge.evidence.quote) {
+        row.append(el("blockquote", "evidence", edge.evidence.quote));
+      }
+      const activate = () => selectNode(otherId);
+      row.addEventListener("click", activate);
+      row.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activate();
+        }
+      });
+      wrap.append(row);
+    });
+    return wrap;
+  }
+
+  function pathSection(order) {
+    const section = el("div", "path-section");
+    section.append(el("div", "section-label", "学习路径 · " + order.length));
+    const list = el("ol", "path-list");
+    order.forEach(id => {
+      const node = nodeById.get(id);
+      const item = el("li");
+      const button = el("button", "path-link", node ? nodeLabel(node) + (node.title ? " · " + node.title : "") : id);
+      button.type = "button";
+      button.addEventListener("click", () => selectNode(id));
+      item.append(button);
+      list.append(item);
+    });
+    section.append(list);
+    return section;
+  }
+
+  function renderDetail(node, pathOrder) {
+    detail.innerHTML = "";
+    const head = el("div", "detail-head");
+    head.append(el("span", "kind " + (node.subkind || node.kind), displayKind(node)));
+    head.append(el("h2", "node-title", node.title || nodeLabel(node)));
+    detail.append(head);
+    detail.append(el("div", "meta", [bookName(node.book_id), node.chapter, node.section, pageText(node)].filter(Boolean).join("  ·  ")));
+    detail.append(el("div", "node-id", node.id));
+    detail.append(el("div", "section-label", "陈述"));
+    detail.append(el("div", "statement", node.statement || "（无陈述文本）"));
+    if (node.kind === "theorem") {
+      detail.append(el("div", "section-label", "证明"));
+      detail.append(node.proof ? el("div", "proof", node.proof) : el("div", "muted", "没有归属到本节点的证明。"));
+    }
+    const incomingEdges = incoming.get(node.id) || [];
+    const outgoingEdges = outgoing.get(node.id) || [];
+    detail.append(el("div", "section-label", "先修 · " + incomingEdges.length));
+    detail.append(edgeList(incomingEdges, "in"));
+    detail.append(el("div", "section-label", "后继 · " + outgoingEdges.length));
+    detail.append(edgeList(outgoingEdges, "out"));
+    if (pathOrder && pathOrder.length) detail.append(pathSection(pathOrder));
+    detail.append(el("div", "footnote", "自动边必须携带证明原文；定义边属于概念层依赖。公式以 LaTeX 源码显示。"));
+  }
+
+  function renderEdge(edge) {
+    detail.innerHTML = "";
+    const source = nodeById.get(edge.from);
+    const target = nodeById.get(edge.to);
+    const head = el("div", "detail-head");
+    head.append(el("span", "kind " + edge.type, TYPE_LABEL[edge.type] || edge.type));
+    head.append(el("h2", "node-title", "依赖证据"));
+    detail.append(head);
+    detail.append(el("div", "meta", (CONF_LABEL[edge.confidence] || edge.confidence) + (edge.proof_chunk ? "  ·  " + edge.proof_chunk : "")));
+    const route = el("div", "edge-title", (source ? nodeLabel(source) : edge.from) + "  →  " + (target ? nodeLabel(target) : edge.to));
+    detail.append(route);
+    detail.append(el("div", "section-label", "原文"));
+    if (edge.evidence && edge.evidence.quote) {
+      detail.append(el("blockquote", "evidence", edge.evidence.quote));
+    } else {
+      detail.append(el("div", "muted", "这条边是人工添加或人工确认的，没有自动抽取的原文引用。"));
+    }
+    const actions = el("div", "detail-actions");
+    if (source) {
+      const button = el("button", "btn", "查看 " + nodeLabel(source));
+      button.type = "button";
+      button.addEventListener("click", () => selectNode(source.id));
+      actions.append(button);
+    }
+    if (target) {
+      const button = el("button", "btn", "查看 " + nodeLabel(target));
+      button.type = "button";
+      button.addEventListener("click", () => selectNode(target.id));
+      actions.append(button);
+    }
+    detail.append(actions);
+  }
+
+  function renderEmptyDetail() {
+    detail.innerHTML = "";
+    const empty = el("div", "empty");
+    empty.append(el("div", "empty-mark", "证"));
+    empty.append(el("h2", null, "先选一个节点"));
+    empty.append(el("p", null, "点击图上的定义或定理，查看陈述、证明，以及每条依赖背后的原文。"));
+    empty.append(el("p", "muted", "没有原文证据的边，不会进入图。"));
+    detail.append(empty);
+  }
+
+  function setHash(id) {
+    try {
+      window.history.replaceState(null, "", "#" + encodeURIComponent(id));
+    } catch (error) {
+      /* file:// or restricted history: hash is best effort. */
+    }
+  }
+
+  function clearHash() {
+    try {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
+  function hashId() {
+    try {
+      return decodeURIComponent(window.location.hash.slice(1));
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function centerElement(element) {
+    if (!element || !element.length) return;
+    const position = element.renderedPosition();
+    const margin = 64;
+    const inView = position.x >= margin
+      && position.x <= cy.width() - margin
+      && position.y >= margin
+      && position.y <= cy.height() - margin;
+    if (inView) return;
+    if (reducedMotion) {
+      cy.center(element);
+    } else {
+      cy.animate({center: {eles: element}}, {duration: 280});
+    }
+  }
+
+  function selectNode(id, options) {
+    const node = nodeById.get(id);
+    if (!node) return;
+    if (state.book !== node.book_id) {
+      state.book = node.book_id;
+      bookSelect.value = state.book;
+      populateChapters(node.chapter);
+    } else if (state.chapter !== "all" && state.chapter !== node.chapter) {
+      state.chapter = node.chapter;
+      chapterSelect.value = node.chapter;
+    }
+    state.selected = id;
+    state.path = [];
+    applyFilters();
+    cy.$(":selected").unselect();
+    const element = cy.$id(id);
+    if (element.length) {
+      element.select();
+      centerElement(element);
+    }
+    renderDetail(node);
+    setHash(id);
+    if (options && options.toast) toast(options.toast);
+  }
+
+  function selectEdge(id) {
+    const edge = edgeById.get(id);
+    if (!edge) return;
+    state.selected = null;
+    state.path = [];
+    state.focus = null;
+    updateFocusButtons();
+    cy.$(":selected").unselect();
+    cy.$id(id).select();
+    refreshVisuals();
+    renderEdge(edge);
+    clearHash();
+  }
+
+  function clearSelection() {
+    state.selected = null;
+    state.path = [];
+    state.focus = null;
+    cy.$(":selected").unselect();
+    updateFocusButtons();
+    refreshVisuals();
+    renderEmptyDetail();
+    clearHash();
+  }
+
+  function setFocus(mode) {
+    if (!state.selected) {
+      toast("先选一个节点，再看它的范围。");
+      return;
+    }
+    state.focus = state.focus === mode ? null : mode;
+    updateFocusButtons();
+    refreshVisuals();
+  }
+
+  function updateFocusButtons() {
+    document.querySelectorAll("[data-focus]").forEach(button => {
+      button.setAttribute("aria-pressed", String(state.focus === button.dataset.focus));
+    });
+  }
+
+  let toastTimer = null;
+  function toast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
+  }
+
+  function readGroupInputs() {
+    document.querySelectorAll("[data-edge-group]").forEach(input => {
+      state.edgeGroups[input.dataset.edgeGroup] = input.checked;
+    });
+  }
+  function writeGroupInputs() {
+    document.querySelectorAll("[data-edge-group]").forEach(input => {
+      input.checked = !!state.edgeGroups[input.dataset.edgeGroup];
+    });
+  }
+
+  function updateSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    searchResults.innerHTML = "";
+    if (!query) {
+      searchResults.classList.remove("open");
+      return;
+    }
+    const matches = rawNodes.filter(node => {
+      const haystack = [node.label, node.title, node.id, (node.aliases || []).join(" ")].join(" ").toLowerCase();
+      return haystack.includes(query);
+    }).slice(0, 8);
+    if (!matches.length) {
+      const empty = el("div", "search-result muted", "没有匹配。");
+      empty.style.cursor = "default";
+      searchResults.append(empty);
+    } else {
+      matches.forEach(node => {
+        const button = el("button", "search-result");
+        button.type = "button";
+        button.append(document.createTextNode(nodeLabel(node) + (node.title ? " · " + node.title : "")));
+        button.append(el("small", null, node.id));
+        button.addEventListener("click", () => {
+          selectNode(node.id);
+          searchResults.classList.remove("open");
+          searchInput.value = "";
+        });
+        searchResults.append(button);
+      });
+    }
+    searchResults.classList.add("open");
+  }
+
+  function resetView() {
+    state.book = books[0] || null;
+    bookSelect.value = state.book || "";
+    state.selected = null;
+    state.focus = null;
+    state.path = [];
+    state.edgeGroups = {theorem: true, concept: true, anaphora: false, llm: false};
+    writeGroupInputs();
+    populateChapters();
+    searchInput.value = "";
+    searchResults.classList.remove("open");
+    updateFocusButtons();
+    renderEmptyDetail();
+    applyFilters();
+    runLayout(true);
+    clearHash();
+  }
+
+  bookSelect.addEventListener("change", () => {
+    state.book = bookSelect.value;
+    state.selected = null;
+    state.path = [];
+    populateChapters();
+    renderEmptyDetail();
+    applyFilters();
+    runLayout(true);
+    clearHash();
+  });
+  chapterSelect.addEventListener("change", () => {
+    state.chapter = chapterSelect.value;
+    state.selected = null;
+    state.path = [];
+    renderEmptyDetail();
+    applyFilters();
+    runLayout(true);
+    clearHash();
+  });
+  document.querySelectorAll("[data-edge-group]").forEach(input => {
+    input.addEventListener("change", () => {
+      readGroupInputs();
+      applyFilters();
+    });
+  });
+  document.querySelectorAll("[data-focus]").forEach(button => {
+    button.addEventListener("click", () => setFocus(button.dataset.focus));
+  });
+  document.getElementById("path-btn").addEventListener("click", () => {
+    if (!state.selected) {
+      toast("先选一个节点，再生成学习路径。");
+      return;
+    }
+    const order = learningPath(state.selected);
+    state.path = order;
+    refreshVisuals();
+    renderDetail(nodeById.get(state.selected), order);
+    toast(order.length > 1 ? "学习路径：" + order.length + " 个节点" : "这个节点没有上游依赖。");
+  });
+  document.getElementById("fit-btn").addEventListener("click", () => cy.fit(undefined, 44));
+  document.getElementById("reset-btn").addEventListener("click", resetView);
+  searchInput.addEventListener("input", updateSearch);
+  searchInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      const first = searchResults.querySelector("button.search-result");
+      if (first) first.click();
+    }
+    if (event.key === "Escape") {
+      searchResults.classList.remove("open");
+      searchInput.blur();
+    }
+  });
+  document.addEventListener("click", event => {
+    if (!searchWrap.contains(event.target)) searchResults.classList.remove("open");
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "/" && document.activeElement !== searchInput) {
+      event.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  cy.on("tap", "node", event => selectNode(event.target.id()));
+  cy.on("tap", "edge", event => selectEdge(event.target.id()));
+  cy.on("tap", event => {
+    if (event.target === cy) clearSelection();
+  });
+
+  populateChapters();
+  writeGroupInputs();
+  applyFilters();
+  renderEmptyDetail();
+  if (rawNodes.length) {
+    runLayout(false);
+    const initial = hashId();
+    if (initial && nodeById.has(initial)) selectNode(initial);
+  } else {
+    canvasEmpty.hidden = false;
+    updateCounts();
+  }
+  if ((meta.cycles || []).length) {
+    const note = document.getElementById("rule-note");
+    note.title = (meta.cycles || []).map(cycle => cycle.join(" → ")).join("\n");
+  }
+})();
+</script>
+</body>
+</html>

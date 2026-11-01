@@ -1,0 +1,38 @@
+# Gold labels for the synthetic demo corpus.
+# These are authored with the demo text, not copied from tool output.
+proofs:
+  - proof_chunk: demo-p0005-0005
+    target_id: demo:定理1.1
+    used:
+      - demo:定义1.1
+  - proof_chunk: demo-p0007-0007
+    target_id: demo:定理1.2
+    used:
+      - demo:定义1.1
+      - demo:定义1.2
+  - proof_chunk: demo-p0011-0011
+    target_id: demo:定理1.3
+    used:
+      - demo:定义1.1
+  - proof_chunk: demo-p0013-0013
+    target_id: demo:引理1.1
+    used:
+      - demo:定义1.1
+  - proof_chunk: demo-p0015-0015
+    target_id: demo:推论1.1
+    used:
+      - demo:定理1.2
+  - proof_chunk: demo-p0018-0018
+    target_id: demo:定理1.4
+    used:
+      - demo:定义1.1
+      - demo:定义1.2
+      - demo:定义1.3
+  - proof_chunk: demo-p0021-0021
+    target_id: demo:定理2.2
+    used:
+      - demo:定理2.1
+  - proof_chunk: demo-p0023-0023
+    target_id: demo:定理2.3
+    used:
+      - demo:定理2.2

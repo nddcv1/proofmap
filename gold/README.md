@@ -21,7 +21,8 @@ proofs:
 
 ## Status
 
-`textbook_starter.yaml` is intentionally empty. The v0.1 acceptance target is 30
-proofs (10 per main textbook), stratified by chapter and proof length. The
-harness and schema are ready; the labels must be added by a human. Do not
-fabricate labels to satisfy a metric.
+`demo_gold.yaml` labels the synthetic demo corpus and is used by the demo CI
+check. `textbook_starter.yaml` is intentionally empty. The v0.1 acceptance
+target is 30 proofs (10 per main textbook), stratified by chapter and proof
+length. The harness and schema are ready; the labels must be added by a human.
+Do not fabricate labels to satisfy a metric.
