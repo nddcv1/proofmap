@@ -46,6 +46,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
 .header-meta{margin-left:auto;text-align:right;font-size:12px;color:var(--ink-soft);line-height:1.5;white-space:nowrap}
 .header-meta strong{display:block;font-family:var(--mono);font-weight:500;font-size:12px;color:var(--ink)}
 .rule-note{color:var(--muted);font-size:11px}
+.structure-notice{flex:0 0 auto;padding:9px 20px;background:#F3DDD9;color:#7A2A22;border-bottom:1px solid #E4C3BE;font-size:12px;line-height:1.6}
 .workspace{flex:1;display:grid;grid-template-columns:256px minmax(0,1fr) 348px;min-height:0}
 .sidebar{border-right:1px solid var(--line);padding:18px 16px 24px;overflow:auto;background:var(--paper)}
 .side-section{margin-bottom:22px}
@@ -63,6 +64,10 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
 .btn:focus-visible,.select:focus-visible,.chip:focus-within{outline:2px solid var(--seal);outline-offset:1px}
 .btn.wide{grid-column:1 / -1}
 .scope-note{margin:6px 0 0;font-size:10px;line-height:1.6;color:var(--muted)}
+#library-scope{margin:0 0 6px;color:var(--ink-soft)}
+.scope-link{border:0;background:transparent;color:var(--seal);padding:0;font-size:10px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;margin-top:4px}
+.scope-link:hover{color:var(--ink)}
+.scope-link:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 .sidebar-note{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;line-height:1.7;color:var(--muted)}
 .sidebar-note code{font-family:var(--mono);font-size:10px}
 .graph-wrap{position:relative;min-width:0;min-height:0;background-color:var(--canvas);background-image:linear-gradient(rgba(22,36,31,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(22,36,31,.035) 1px,transparent 1px);background-size:28px 28px;overflow:hidden}
@@ -148,10 +153,12 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     <span id="rule-note" class="rule-note">每条自动边都有原文证据</span>
   </div>
 </header>
+<div id="structure-notice" class="structure-notice" hidden></div>
 <main class="workspace">
   <aside class="sidebar" aria-label="过滤与视图">
     <section class="side-section">
       <h2>书目</h2>
+      <div id="library-scope" class="scope-note"></div>
       <select id="book-select" class="select" aria-label="选择书目"></select>
       <div id="book-scope" class="scope-note"></div>
     </section>
@@ -159,6 +166,7 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
       <h2>章节</h2>
       <select id="chapter-select" class="select" aria-label="选择章节"></select>
       <div id="chapter-scope" class="scope-note"></div>
+      <button id="all-chapters-btn" class="scope-link" type="button" hidden></button>
     </section>
     <section class="side-section">
       <h2>显示的依赖</h2>
@@ -405,8 +413,10 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
 
   const bookSelect = document.getElementById("book-select");
   const chapterSelect = document.getElementById("chapter-select");
+  const libraryScope = document.getElementById("library-scope");
   const bookScope = document.getElementById("book-scope");
   const chapterScope = document.getElementById("chapter-scope");
+  const allChaptersBtn = document.getElementById("all-chapters-btn");
   const detail = document.getElementById("detail");
   const counts = document.getElementById("counts");
   const ruleNote = document.getElementById("rule-note");
@@ -415,11 +425,17 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
   const searchWrap = document.querySelector(".search-wrap");
   const toastEl = document.getElementById("toast");
   const canvasEmpty = document.getElementById("canvas-empty");
+  const structureNotice = document.getElementById("structure-notice");
   const showIsolatedInput = document.getElementById("show-isolated");
   state.showIsolated = rawNodes.length
     ? isolatedNodes.size / rawNodes.length <= 0.2
     : true;
   showIsolatedInput.checked = state.showIsolated;
+  if (meta.structure_only) {
+    structureNotice.hidden = false;
+    structureNotice.textContent = meta.notice
+      || "公开结构版：仅展示章节、编号、页码与依赖边；教材原文未上传。";
+  }
 
   const bookCounts = new Map();
   rawNodes.forEach(n => bookCounts.set(n.book_id, (bookCounts.get(n.book_id) || 0) + 1));
@@ -433,6 +449,14 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     books.forEach(id => bookSelect.append(new Option(bookName(id), id)));
     bookSelect.value = state.book;
   }
+  const libraryChapters = new Set(
+    rawNodes
+      .map(node => node.book_id + "|" + node.chapter)
+      .filter(key => !key.endsWith("|"))
+  ).size;
+  libraryScope.textContent = rawNodes.length
+    ? `全库 ${books.length} 本书 · ${libraryChapters} 章 · ${rawNodes.length} 个节点`
+    : "没有数据。";
 
   function populateChapters(preferred) {
     chapterSelect.innerHTML = "";
@@ -442,6 +466,10 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     chapters.forEach(ch => chapterSelect.append(new Option(ch, ch)));
     if (preferred) {
       state.chapter = preferred;
+    } else if (state.book === meta.default_book && meta.default_chapter) {
+      state.chapter = meta.default_chapter === "all" || chapters.includes(meta.default_chapter)
+        ? meta.default_chapter
+        : "all";
     } else if (inBook.length <= 40 || chapters.length <= 1) {
       state.chapter = "all";
     } else {
@@ -472,15 +500,19 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     if (!state.book) {
       bookScope.textContent = "没有数据。";
       chapterScope.textContent = "";
+      allChaptersBtn.hidden = true;
       return;
     }
     const visibleCount = cy.nodes().filter(node => !node.hasClass("filtered")).length;
     bookScope.textContent = `${bookName(state.book)} · ${inBook.length} 个节点 · ${chapterCount} 章`;
     if (state.chapter === "all") {
       chapterScope.textContent = `当前：全部章节（${inBook.length} 个节点，可见 ${visibleCount} 个）。`;
+      allChaptersBtn.hidden = true;
     } else {
       const count = inBook.filter(n => n.chapter === state.chapter).length;
-      chapterScope.textContent = `当前：${state.chapter}（${count} 个节点，可见 ${visibleCount} 个）。切到“全部章节”查看全书。`;
+      chapterScope.textContent = `当前：${state.chapter}（${count} 个节点，可见 ${visibleCount} 个）。`;
+      allChaptersBtn.hidden = false;
+      allChaptersBtn.textContent = `查看全书（${inBook.length} 个节点）`;
     }
   }
 
@@ -489,9 +521,13 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     const visibleEdgeCount = cy.edges().filter(e => !e.hasClass("filtered")).length;
     counts.textContent = visibleNodeCount + " 个节点 · " + visibleEdgeCount + " 条依赖";
     const cycleCount = (meta.cycles || []).length;
-    ruleNote.textContent = cycleCount
-      ? "每条自动边都有原文证据 · " + cycleCount + " 个可疑环"
-      : "每条自动边都有原文证据";
+    if (meta.structure_only) {
+      ruleNote.textContent = "结构版：保留章节、编号、页码与依赖边；原文未公开";
+    } else {
+      ruleNote.textContent = cycleCount
+        ? "每条自动边都有原文证据 · " + cycleCount + " 个可疑环"
+        : "每条自动边都有原文证据";
+    }
     canvasEmpty.hidden = visibleNodeCount > 0;
     if (!visibleNodeCount) {
       canvasEmpty.textContent = rawNodes.length
@@ -745,11 +781,16 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     detail.append(head);
     detail.append(el("div", "meta", [bookName(node.book_id), node.chapter, node.section, pageText(node)].filter(Boolean).join("  ·  ")));
     detail.append(el("div", "node-id", node.id));
-    detail.append(el("div", "section-label", "陈述"));
-    detail.append(el("div", "statement", node.statement || "（无陈述文本）"));
-    if (node.kind === "theorem") {
-      detail.append(el("div", "section-label", "证明"));
-      detail.append(node.proof ? el("div", "proof", node.proof) : el("div", "muted", "没有归属到本节点的证明。"));
+    if (meta.structure_only) {
+      detail.append(el("div", "section-label", "原文"));
+      detail.append(el("div", "muted", meta.notice || "公开结构版不包含教材原文。"));
+    } else {
+      detail.append(el("div", "section-label", "陈述"));
+      detail.append(el("div", "statement", node.statement || "（无陈述文本）"));
+      if (node.kind === "theorem") {
+        detail.append(el("div", "section-label", "证明"));
+        detail.append(node.proof ? el("div", "proof", node.proof) : el("div", "muted", "没有归属到本节点的证明。"));
+      }
     }
     const incomingEdges = incoming.get(node.id) || [];
     const outgoingEdges = outgoing.get(node.id) || [];
@@ -758,7 +799,13 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     detail.append(el("div", "section-label", "后继 · " + outgoingEdges.length));
     detail.append(edgeList(outgoingEdges, "out"));
     if (pathOrder && pathOrder.length) detail.append(pathSection(pathOrder));
-    detail.append(el("div", "footnote", "自动边必须携带证明原文；定义边属于概念层依赖。公式以 LaTeX 源码显示。"));
+    detail.append(el(
+      "div",
+      "footnote",
+      meta.structure_only
+        ? "公开结构版只保留章节、编号、页码与依赖边；教材原文、证明和证据引用未上传。"
+        : "自动边必须携带证明原文；定义边属于概念层依赖。公式以 LaTeX 源码显示。"
+    ));
   }
 
   function renderEdge(edge) {
@@ -767,12 +814,12 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     const target = nodeById.get(edge.to);
     const head = el("div", "detail-head");
     head.append(el("span", "kind " + edge.type, TYPE_LABEL[edge.type] || edge.type));
-    head.append(el("h2", "node-title", "依赖证据"));
+    head.append(el("h2", "node-title", meta.structure_only ? "依赖边" : "依赖证据"));
     detail.append(head);
     detail.append(el("div", "meta", (CONF_LABEL[edge.confidence] || edge.confidence) + (edge.proof_chunk ? "  ·  " + edge.proof_chunk : "")));
     const route = el("div", "edge-title", (source ? nodeLabel(source) : edge.from) + "  →  " + (target ? nodeLabel(target) : edge.to));
     detail.append(route);
-    detail.append(el("div", "section-label", "原文"));
+    detail.append(el("div", "section-label", meta.structure_only ? "说明" : "原文"));
     if (edge.evidence && edge.evidence.quote) {
       detail.append(el("blockquote", "evidence", edge.evidence.quote));
     } else {
@@ -799,8 +846,20 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
     const empty = el("div", "empty");
     empty.append(el("div", "empty-mark", "证"));
     empty.append(el("h2", null, "先选一个节点"));
-    empty.append(el("p", null, "点击图上的定义或定理，查看陈述、证明，以及每条依赖背后的原文。"));
-    empty.append(el("p", "muted", "没有原文证据的边，不会进入图。"));
+    empty.append(el(
+      "p",
+      null,
+      meta.structure_only
+        ? "点击节点查看章节、页码与依赖边。公开结构版不包含教材原文。"
+        : "点击图上的定义或定理，查看陈述、证明，以及每条依赖背后的原文。"
+    ));
+    empty.append(el(
+      "p",
+      "muted",
+      meta.structure_only
+        ? "边仍然保留方向、类型和置信度。"
+        : "没有原文证据的边，不会进入图。"
+    ));
     detail.append(empty);
   }
 
@@ -1016,6 +1075,14 @@ header{height:68px;flex:0 0 auto;display:flex;align-items:center;gap:22px;paddin
   });
   showIsolatedInput.addEventListener("change", () => {
     state.showIsolated = showIsolatedInput.checked;
+    applyFilters();
+    runLayout(true);
+  });
+  allChaptersBtn.addEventListener("click", () => {
+    state.chapter = "all";
+    chapterSelect.value = "all";
+    state.selected = null;
+    state.path = [];
     applyFilters();
     runLayout(true);
   });

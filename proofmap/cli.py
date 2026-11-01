@@ -13,6 +13,7 @@ from proofmap.build import build_all
 from proofmap.evaluate import evaluate
 from proofmap.io import read_json, read_jsonl
 from proofmap.model import Edge, ProofAttachment
+from proofmap.redact import redact_graph
 from proofmap.render import render_html
 
 
@@ -56,7 +57,12 @@ def _parser() -> argparse.ArgumentParser:
     render = subparsers.add_parser("render", parents=[_common()], help="write single-file HTML")
     render.add_argument("--build", default="build")
     render.add_argument("--out", required=True)
-    render.add_argument("--title", default="ProofMap · 数学教材先修地图")
+    render.add_argument("--title", default=None)
+    render.add_argument(
+        "--structure-only",
+        action="store_true",
+        help="redact statements, proofs, and evidence quotes before rendering",
+    )
 
     query = subparsers.add_parser("query", parents=[_common()], help="traverse the graph")
     query.add_argument("kind", choices=["prereq", "dependents"])
@@ -231,7 +237,14 @@ def main(argv: list[str] | None = None) -> int:
             return _audit(args)
         if args.command == "render":
             graph = _load_graph(args.build)
-            render_html(graph, args.out, title=args.title)
+            if args.structure_only:
+                graph = redact_graph(graph)
+            title = args.title or (
+                "ProofMap · 数学分析结构版"
+                if args.structure_only
+                else "ProofMap · 数学教材先修地图"
+            )
+            render_html(graph, args.out, title=title)
             size = Path(args.out).stat().st_size
             if args.json:
                 print(json.dumps({"out": args.out, "bytes": size}, ensure_ascii=False))

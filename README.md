@@ -2,11 +2,15 @@
 
 把数学教材与笔记变成一张**每条边都能引用原文**的先修依赖图。
 
-[在线 demo](https://nddcv1.github.io/proofmap/) · [设计文档](docs/superpowers/specs/2026-11-01-proofmap-design.md)
+[在线结构版](https://nddcv1.github.io/proofmap/) · [证据版合成 demo](https://nddcv1.github.io/proofmap/demo.html) · [设计文档](docs/superpowers/specs/2026-11-01-proofmap-design.md)
 
-> **在线 demo 只有两章，是因为它用的是仓库自带的合成小语料**（12 个节点），只用于演示交互和证据面板。完整的数学分析图不随公开仓库上传：教材原文和私人笔记有版权与隐私限制。用本地 math-kb 数据运行构建命令，就能看到数分上 9 章、数分下 8 章以及线代等全部内容。
+> **在线主页是完整结构版**：覆盖 29 章、545 个节点，只保留章节、编号、页码和依赖边，不含教材原文。带原文证据的交互样例是 [合成 demo](https://nddcv1.github.io/proofmap/demo.html)（两章合成数据）。完整的教材原文图只能本地构建，避免公开上传版权内容和私人笔记。
 
-![ProofMap demo](docs/screenshot.png)
+![ProofMap 结构版](docs/screenshot.png)
+
+带证据原文的合成 demo：
+
+![ProofMap 证据版 demo](docs/demo-screenshot.png)
 
 ## 它做什么
 
@@ -53,10 +57,13 @@ proofmap render --build build/demo --out demo.html
 ```bash
 uv run proofmap build --chunks <path-to-chunks.jsonl> --out build/mathkb
 uv run proofmap audit --build build/mathkb
+# 本地完整证据版
 uv run proofmap render --build build/mathkb --out build/mathkb/proofmap.html
+# 不含教材原文的公开结构版
+uv run proofmap render --build build/mathkb --out docs/index.html --structure-only
 ```
 
-例如本地 math-kb 的产物在 `D:/zzt/math-kb/data/chunks.jsonl`，把上面的占位路径替换掉即可。
+例如本地 math-kb 的产物在 `D:/zzt/math-kb/data/chunks.jsonl`，把上面的占位路径替换掉即可。`--structure-only` 会剥离 `statement`、`proof`、别名、`source_chunks` 和证据引用，只保留结构信息。
 
 `build/mathkb/` 里会有：
 
@@ -71,21 +78,21 @@ uv run proofmap render --build build/mathkb --out build/mathkb/proofmap.html
 
 - 左右两侧分别是过滤器和节点详情；中间是按书/章过滤的依赖图。
 - 实线=定理依赖，虚线=定义概念，点线=指代引用，粗红线=人工确认。
+- 结构版保留章节、编号、页码、依赖方向、类型和置信度；默认显示依赖最密的章节，章节下方有“查看全书”入口。
+- 证据版还可以看陈述、归属证明和每条先修边的原文。
 - 选中节点后可以：
-  - 看陈述、归属证明、页码；
-  - 看每条先修边的原文证据；
   - 只看先修 / 只看后继；
   - 生成上游拓扑排序的“学习路径”；
   - 搜索编号、标题或别名。
-- 默认只显示当前书里依赖最密的章节，并隐藏无依赖节点；可以手动切换章节或勾选“显示孤立节点”。
+- 默认隐藏无依赖节点；可以手动切换章节或勾选“显示孤立节点”。
 
 ## 当前状态（2026-11-01）
 
-Demo（`examples/demo`，合成数据）：
+证据版 demo（`examples/demo`，合成数据）：
 
 - 12 个节点，11 条边，9 个证明全部归属。
 - 8 个手标证明：attachment accuracy 1.000，edge precision 1.000，edge recall 1.000。
-- 50 个自动化测试。
+- 53 个自动化测试。
 
 本地 math-kb 全量基线（5 本书，未提交数据）：
 
@@ -256,6 +263,7 @@ uv run --extra dev pytest -q
 - 本地全量基线里仍有 55 个歧义、34 个未归属证明；需要看 `attachment_audit.md` 或写 corrections。
 - 公式以 LaTeX 源码显示，不做排版；终端和离线 HTML 都如此。
 - 30 个真实教材证明的黄金集还没标，因此不对真实数据宣称 precision/recall。
+- 公开结构版不包含教材原文；完整证据只在本地构建或合成 demo 中。
 - 笔记覆盖（Obsidian）在 v0.2，还没做。
 
 ## License

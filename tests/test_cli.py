@@ -30,6 +30,19 @@ def test_build_render_query_eval(tmp_path: Path, capsys):
     assert "1.000" in output
 
 
+def test_render_structure_only_redacts_text(tmp_path: Path):
+    build_dir = tmp_path / "build"
+    assert main(["build", "--chunks", str(DEMO), "--out", str(build_dir), "--book", "demo"]) == 0
+    html = tmp_path / "structure.html"
+    assert main([
+        "render", "--build", str(build_dir), "--out", str(html), "--structure-only",
+    ]) == 0
+    text = html.read_text(encoding="utf-8")
+    assert "公开结构版" in text
+    assert "由定义 1.1" not in text
+    assert "定理 1.1" in text
+
+
 def test_build_missing_chunks_returns_1(tmp_path: Path, capsys):
     assert main([
         "build", "--chunks", str(tmp_path / "missing.jsonl"), "--out", str(tmp_path / "out"),
